@@ -1,0 +1,5 @@
+prompt = """
+Help me create a new Harness CI/CD pipeline.
+First, confirm org and project. Then use harness_describe to get the pipeline schema.
+If source code is available, analyze the codebase to detect language, build tools, and deployment targets.
+"""

@@ -1,0 +1,10 @@
+{
+  "name": "harness",
+  "displayName": "Harness DevOps",
+  "description": "AI-native interface to Harness CI/CD — create pipelines, debug failures, analyze costs, manage feature flags, and operate 144+ resource types through natural language.",
+  "version": "0.1.0",
+  "publisher": "harness",
+  "categories": ["DevOps", "CI/CD", "Cloud"],
+  "license": "Apache-2.0",
+  "repository": "https://github.com/thisrohangupta/harness-ai"
+}

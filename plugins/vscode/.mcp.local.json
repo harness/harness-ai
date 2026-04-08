@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "harness": {
+      "command": "npx",
+      "args": ["-y", "harness-mcp-v2"],
+      "env": {
+        "HARNESS_API_KEY": "${input:harness-pat}",
+        "HARNESS_ACCOUNT_ID": "${input:harness-account-id}"
+      }
+    }
+  }
+}

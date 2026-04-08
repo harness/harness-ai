@@ -1,0 +1,5 @@
+prompt = """
+Help me debug a failed Harness pipeline execution.
+Use harness_diagnose to analyze the failure. Retrieve execution details and logs.
+Identify the root cause, which step failed, and suggest a fix.
+"""

@@ -1,0 +1,5 @@
+prompt = """
+Analyze my cloud costs using Harness Cloud Cost Management.
+List cost perspectives, retrieve cost data, summarize spending by service or provider.
+Highlight anomalies and recommend optimizations.
+"""

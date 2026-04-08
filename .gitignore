@@ -1,0 +1,10 @@
+node_modules/
+.DS_Store
+*.backup
+.env
+.env.*
+!.env.example
+
+# Cursor IDE — ignore everything except plans
+.cursor/*
+!.cursor/plans/

@@ -1,0 +1,30 @@
+{
+  "name": "harness",
+  "displayName": "Harness DevOps",
+  "description": "AI-native interface to Harness CI/CD — create pipelines, debug failures, analyze costs, and manage 144+ resource types.",
+  "version": "0.1.0",
+  "contextFileName": "GEMINI.md",
+  "settings": [
+    {
+      "name": "HARNESS_API_KEY",
+      "description": "Your Harness Personal Access Token",
+      "sensitive": true,
+      "required": true
+    },
+    {
+      "name": "HARNESS_ACCOUNT_ID",
+      "description": "Your Harness Account ID",
+      "required": true
+    }
+  ],
+  "mcpServers": {
+    "harness": {
+      "command": "npx",
+      "args": ["-y", "harness-mcp-v2"],
+      "env": {
+        "HARNESS_API_KEY": "${settings.HARNESS_API_KEY}",
+        "HARNESS_ACCOUNT_ID": "${settings.HARNESS_ACCOUNT_ID}"
+      }
+    }
+  }
+}
