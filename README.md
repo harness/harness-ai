@@ -1,118 +1,117 @@
-# harness-ai
+# Harness AI
 
-Harness AI distribution packages — plugins, extensions, and agents that bring Harness CI/CD tools to every AI coding environment.
+> Natural-language DevOps for every AI coding assistant.
 
-Repository: [https://github.com/harness/harness-ai](https://github.com/harness/harness-ai)
+[![License](https://img.shields.io/github/license/harness/harness-ai)](LICENSE)
+[![Cursor Plugin CI](https://github.com/harness/harness-ai/actions/workflows/cursor-plugin.yml/badge.svg)](https://github.com/harness/harness-ai/actions/workflows/cursor-plugin.yml)
 
-## Structure
+**Harness AI** packages the Harness platform — pipelines, GitOps, secrets, feature flags, cloud cost, chaos, DORA metrics, policy-as-code — as plugins and extensions for the AI coding assistants you already use: **Cursor**, **Claude Code**, **VS Code + Copilot**, and **Gemini CLI**. One source of truth for skills, MCP wiring, governance hooks, and workspace rules — distributed to each environment in the shape that platform expects.
 
-```
-harness-ai/
-├── .cursor-plugin/
-│   └── marketplace.json # Cursor marketplace manifest (multi-plugin repo)
-├── plugins/
-│   ├── vscode/          # VS Code / Copilot Agent Plugin
-│   ├── claude/          # Claude Code + Cowork Plugin
-│   └── cursor/          # Cursor IDE plugin (skills, rules, MCP)
-├── extensions/
-│   └── gemini/          # Gemini CLI Extension
-└── scripts/             # Build & sync utilities (sync-skills, validate)
-```
+Tell your agent *"Create a Kubernetes pipeline for this service, run it in staging, and open a PR with the result"* — and it goes end-to-end through Harness.
 
-## Packages
+---
 
-| Package | Platform | Install |
-|---------|----------|---------|
-| **VS Code Plugin** | VS Code / Copilot | `@agentPlugins harness` |
-| **Claude Plugin** | Claude Code, Cowork | `/plugin install harness` |
-| **Cursor Plugin** | Cursor IDE | Install from [Cursor marketplace](https://cursor.com/marketplace/publish) using this repo URL; layout per [Plugins reference](https://cursor.com/docs/reference/plugins) (`plugins/cursor/`) |
-| **Gemini Extension** | Gemini CLI | `gemini extensions install https://github.com/harness/harness-ai` |
+## Install
 
-## MCP Modes
+All four packages connect to the Harness remote MCP server (`https://mcp.harness.io/mcp`) by default — **no PAT required**, OAuth handles authentication on first tool call. If you prefer OSS + PAT, every plugin ships an `.mcp.local.json` sample you can swap in.
 
-Two modes are supported for connecting to Harness:
+### Cursor IDE
 
-- **Remote MCP**: `https://mcp.harness.io/mcp` — zero install, OAuth handles auth.
-- **OSS MCP**: `npx harness-mcp-v2` — runs locally, requires a Harness PAT.
-
-Current defaults per package:
-
-| Package | Default mode | Notes |
-|---------|--------------|-------|
-| VS Code Plugin | Remote | `.mcp.json` uses `https://mcp.harness.io/mcp` |
-| Claude Plugin | Remote | `.mcp.json` uses `https://mcp.harness.io/mcp` |
-| Gemini Extension | Remote | `gemini-extension.json` uses the remote URL |
-| Cursor Plugin | Remote | `mcp.json` uses `https://mcp.harness.io/mcp`. Users who prefer OSS+PAT can edit `plugins/cursor/mcp.json` to run `npx harness-mcp-v2 stdio` with the env vars listed in `plugins/cursor/README.md`. |
-
-## Development
+Marketplace listing is pending review. To install from source today:
 
 ```bash
-# Sync skills from harness-skills repo into all packages
-./scripts/sync-skills.sh ../harness-skills
-
-# Test VS Code plugin locally
-# Open plugins/vscode/ as a workspace in VS Code
-
-# Test Claude plugin locally
-# cd plugins/claude && claude /plugin install .
-
-# Test Gemini extension locally
-# cd extensions/gemini && gemini extensions link .
-
-# Validate / develop Cursor plugin (from monorepo root)
-# cd plugins/cursor && node scripts/validate-plugin.mjs
+git clone https://github.com/harness/harness-ai ~/harness-ai
+mkdir -p ~/.cursor/plugins
+ln -s ~/harness-ai/plugins/cursor ~/.cursor/plugins/harness
+# Restart Cursor
 ```
+
+Details: [`plugins/cursor/README.md`](plugins/cursor/README.md).
+
+### Claude Code
+
+```bash
+git clone https://github.com/harness/harness-ai
+cd harness-ai/plugins/claude && claude /plugin install .
+```
+
+Details: [`plugins/claude/README.md`](plugins/claude/README.md).
+
+### VS Code + Copilot (preview)
+
+VS Code agent plugins are in preview. Enable `chat.plugins.enabled: true`, then add this repo as a marketplace:
+
+```json
+{
+  "chat.plugins.marketplaces": ["harness/harness-ai"]
+}
+```
+
+Open the Extensions view and search `@agentPlugins harness`. Details: [`plugins/vscode/README.md`](plugins/vscode/README.md).
+
+### Gemini CLI
+
+```bash
+gemini extensions install https://github.com/harness/harness-ai
+```
+
+Details: [`extensions/gemini/README.md`](extensions/gemini/README.md).
+
+---
+
+## What's inside
+
+All four packages ship the same surface, adapted to each platform's conventions:
+
+- **Skills** — multi-step DevOps workflows the agent can invoke as slash commands (`/create-pipeline`, `/debug-pipeline`, `/analyze-costs`, …).
+- **Harness MCP server** — a consolidated set of tools (`harness_list`, `harness_get`, `harness_create`, `harness_update`, `harness_delete`, `harness_execute`, `harness_search`, `harness_describe`, `harness_schema`, `harness_diagnose`, `harness_status`) covering the Harness resource surface.
+- **Workspace rules** — scope discipline, dependency checks, URL extraction for Harness UI links.
+- **Governance hooks** *(Cursor plugin today)* — surface reusable templates before creating a raw pipeline, and evaluate pipeline YAML against the Harness Policy Engine.
+
+### Skill categories
+
+| Category | Skills |
+|----------|--------|
+| Pipelines & execution | `create-pipeline`, `create-pipeline-v1`, `create-trigger`, `create-template`, `run-pipeline`, `debug-pipeline`, `migrate-pipeline` |
+| Infrastructure & resources | `create-service`, `create-environment`, `create-infrastructure`, `create-connector`, `create-secret` |
+| Access control | `manage-users`, `manage-roles` |
+| Platform operations | `manage-delegates`, `manage-feature-flags`, `manage-freeze-windows`, `manage-pull-requests`, `manage-slos` |
+| Observability & governance | `analyze-costs`, `audit-report`, `dora-metrics`, `gitops-status`, `chaos-experiment`, `scorecard-review`, `security-report`, `template-usage`, `create-policy` |
+| AI agents | `create-agent`, `create-agent-template` |
+
+The full, authoritative catalog lives in [harness/harness-skills](https://github.com/harness/harness-skills) and is mirrored into every plugin tree by the daily [`Sync Skills`](.github/workflows/sync-skills.yml) workflow.
+
+---
+
+## MCP connection modes
+
+| Mode | URL / command | Auth | Default for |
+|------|---------------|------|-------------|
+| **Remote MCP** | `https://mcp.harness.io/mcp` | OAuth | Cursor, Claude, VS Code, Gemini |
+| **OSS MCP** | `npx harness-mcp-v2 stdio` | `HARNESS_API_KEY` + `HARNESS_ACCOUNT_ID` | Available as a sample (`.mcp.local.json` / `gemini-extension.local.json`) |
+
+To switch a plugin to OSS MCP, copy its `.mcp.local.json` over the active MCP config.
+
+---
+
+## Contributing
+
+We welcome contributions — new skills, hook improvements, additional platform plugins, and docs fixes.
+
+- **Skills source of truth** is [harness/harness-skills](https://github.com/harness/harness-skills). Edit there; the daily sync PR mirrors changes here.
+- **Plugin / CI / rules changes** → PR against this repo.
+- Contribution rules for AI agents and humans: [`AGENTS.md`](AGENTS.md) (dev environment, validation, per-plugin specs, PR conventions).
+- Full human-contributor guidelines: `CONTRIBUTING.md` *(coming soon)*.
 
 ## Releasing
 
-Each package versions **independently** — there is no monorepo-wide release tag.
+Each package versions independently. Release process and tag convention: [`docs/RELEASING.md`](docs/RELEASING.md).
 
-| Package | Manifest | Where it ships |
-|---------|----------|----------------|
-| Cursor plugin | `plugins/cursor/.cursor-plugin/plugin.json` | [Cursor marketplace](https://cursor.com/marketplace/publish) (submit the repo URL `https://github.com/harness/harness-ai`) |
-| VS Code / Copilot plugin | `plugins/vscode/plugin.json` | VS Code marketplace |
-| Claude plugin | `plugins/claude/plugin.json` | Claude plugin directory |
-| Gemini CLI extension | `extensions/gemini/gemini-extension.json` | `gemini extensions install https://github.com/harness/harness-ai` |
+## Related repositories
 
-### When to bump a version
-
-- **User-visible change** (new skill, hook, MCP tool, install behavior, env var): bump only the affected package's manifest using SemVer.
-  - **MAJOR** — breaking change (removed skill, renamed env var, incompatible MCP wiring).
-  - **MINOR** — additive change (new skill, new hook, new optional env var).
-  - **PATCH** — bug fix, doc change, internal cleanup.
-- **Skill drift sync** from `harness/harness-skills` (PR opened by `.github/workflows/sync-skills.yml`): bump **PATCH** on every plugin whose `skills/` tree changed.
-- **No version bump needed** for: README-only edits that don't change install/usage, CI workflow tweaks, repo-level scripts under `scripts/`.
-
-### Release flow per package
-
-1. Land the change on `main` (PR + CI green).
-2. Bump `version` in the relevant manifest in the same PR (or a follow-up).
-3. Tag release with the package prefix:
-   - Cursor: `cursor-vX.Y.Z`
-   - VS Code: `vscode-vX.Y.Z`
-   - Claude: `claude-vX.Y.Z`
-   - Gemini: `gemini-vX.Y.Z`
-4. Re-submit / publish:
-   - **Cursor**: marketplace re-pulls from the default branch; no manual action unless metadata changed.
-   - **VS Code / Claude**: re-submit if their marketplaces require it.
-   - **Gemini**: users get the new version on next `gemini extensions install ...`.
-
-### Validating before release
-
-Run the full validator from the repo root:
-
-```bash
-./scripts/validate.sh              # all four packages
-node plugins/cursor/scripts/validate-plugin.mjs   # deep Cursor plugin checks (also wired in CI)
-```
-
-CI (`.github/workflows/cursor-plugin.yml`) re-runs the same checks plus hook fail-open smoke tests on every PR that touches `plugins/cursor/**` or `.cursor-plugin/marketplace.json`.
-
-## Related Repos
-
-- [mcp-server](https://github.com/harness/mcp-server) — Harness MCP server (11 consolidated tools across 160+ resource types)
-- [harness-skills](https://github.com/harness/harness-skills) — DevOps skills for AI coding assistants (Cursor, Claude Code, Copilot, Gemini, ...)
+- [harness/mcp-server](https://github.com/harness/mcp-server) — Harness MCP server implementation.
+- [harness/harness-skills](https://github.com/harness/harness-skills) — canonical skill catalog mirrored by every plugin here.
 
 ## License
 
-Apache-2.0
+Apache-2.0 — see [LICENSE](LICENSE).

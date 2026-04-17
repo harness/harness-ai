@@ -2,71 +2,13 @@
 
 This directory is the **Harness Cursor plugin** inside the [harness-ai](https://github.com/harness/harness-ai) monorepo (`plugins/cursor/`). The repository root defines [Cursor multi-plugin discovery](https://cursor.com/docs/reference/plugins#multi-plugin-repositories) via `.cursor-plugin/marketplace.json`. Submit the **harness-ai** repository URL to the [Cursor marketplace](https://cursor.com/marketplace/publish).
 
-The plugin bundles:
+The plugin bundles Harness skills, the consolidated [Harness MCP server](https://github.com/harness/mcp-server), workspace rules, and governance hooks so the agent follows Harness scope, validation, and confirmation conventions out of the box.
 
-- **Harness Skills** that teach Cursor how to plan, build, deploy, and debug on the Harness.io platform
-- The **[Harness MCP Server](https://github.com/harness/mcp-server)**, which gives the agent 11 consolidated tools across 160+ Harness resource types
-- **Workspace rules** so the agent follows Harness scope, validation, and confirmation conventions out of the box
-
-Install the plugin and every Harness capability — CI/CD, GitOps, secrets, connectors, feature flags, chaos, cloud cost, security, DORA metrics — becomes available inside Cursor.
+Skill catalog and MCP tool surface are listed in the [root README](../../README.md) and the authoritative upstream [harness/harness-skills](https://github.com/harness/harness-skills).
 
 ---
 
 ## Features
-
-### Harness MCP Server
-
-Cursor connects to the Harness MCP server over stdio. Eleven generic tools cover the entire platform:
-
-| Tool | Purpose |
-|------|---------|
-| `harness_list` | List resources with filters and pagination |
-| `harness_get` | Get a single resource by ID |
-| `harness_create` | Create a resource (server elicits confirmation) |
-| `harness_update` | Update a resource (server elicits confirmation) |
-| `harness_delete` | Delete a resource (server elicits confirmation) |
-| `harness_execute` | Run, retry, interrupt, sync, toggle, approve, reject, test_connection |
-| `harness_search` | Cross-resource keyword search |
-| `harness_describe` | Local metadata lookup — resource types, operations, fields (no API call) |
-| `harness_schema` | Exact JSON Schema for `create`/`update` body payloads |
-| `harness_diagnose` | Pipeline failure analysis |
-| `harness_status` | Project health overview |
-
-Tools accept `resource_type` (e.g. `pipeline`, `pipeline_v1`, `secret`, `template`) and support passing a Harness UI URL directly via the `url` parameter — `org_id`, `project_id`, `resource_type`, and `resource_id` are auto-extracted. Nested URLs (e.g. a PR link) also auto-extract `repo_id` and `pr_number`.
-
-### Available Skills
-
-| Skill | Description |
-|-------|-------------|
-| `/create-pipeline` | Generate v0 pipeline YAML (CI, CD, combined, approvals) |
-| `/create-pipeline-v1` | Generate v1 simplified pipeline YAML |
-| `/create-trigger` | Create webhook, scheduled, and artifact triggers |
-| `/create-template` | Create reusable step, stage, pipeline, and step group templates |
-| `/run-pipeline` | Execute and monitor pipeline runs |
-| `/debug-pipeline` | Diagnose pipeline execution failures |
-| `/migrate-pipeline` | Convert v0 pipelines to v1 format |
-| `/create-service` | Define services (Kubernetes, Helm, ECS) with artifact sources |
-| `/create-environment` | Create environments (PreProduction, Production) with overrides |
-| `/create-infrastructure` | Define infrastructure (K8s, ECS, Serverless) |
-| `/create-connector` | Create connectors (GitHub, AWS, GCP, Azure, Docker, K8s) |
-| `/create-secret` | Manage secrets (SecretText, SecretFile, SSHKey, WinRM) |
-| `/create-agent` | Scaffold a new Harness AI agent |
-| `/create-agent-template` | Generate AI agent templates (metadata.json, pipeline.yaml, wiki.MD) |
-| `/manage-users` | Manage users, user groups, and service accounts |
-| `/manage-roles` | RBAC roles, assignments, permissions, and resource groups |
-| `/manage-feature-flags` | Create, list, toggle, and delete feature flags |
-| `/manage-delegates` | Monitor delegate health and manage registration tokens |
-| `/analyze-costs` | Cloud cost analysis, recommendations, and anomaly detection |
-| `/security-report` | Security vulnerabilities, SBOMs, and compliance reports |
-| `/dora-metrics` | DORA metrics and engineering performance reports |
-| `/gitops-status` | GitOps application health, sync status, and pod logs |
-| `/chaos-experiment` | Create and run chaos engineering experiments |
-| `/scorecard-review` | IDP scorecards and service maturity review |
-| `/audit-report` | Audit trails and compliance evidence (SOC2, GDPR, HIPAA) |
-| `/template-usage` | Template dependency tracking, impact analysis, and adoption |
-| `/create-policy` | Create OPA governance policies for supply chain security |
-| `/manage-pull-requests` | Harness Code PRs — create/merge, reviewers, comments, checks, activity |
-| `/manage-freeze-windows` | Deployment freeze windows and project global freeze — create, toggle, delete |
 
 ### Workspace Rule
 
@@ -197,59 +139,6 @@ Build the server first: see [harness/mcp-server](https://github.com/harness/mcp-
 - "Create a service account for the deploy bot with Pipeline Execute permissions on the `web` project"
 - "Add a new secret `slack_webhook` at the project scope"
 - "Toggle the `new_checkout` feature flag to 100% in production"
-
----
-
-## Directory Structure
-
-```
-plugins/cursor/
-├── .cursor-plugin/
-│   └── plugin.json          # Plugin manifest
-├── assets/
-│   └── logo.svg             # Marketplace logo
-├── mcp.json                 # Harness MCP server config
-├── hooks/
-│   └── hooks.json           # MCP governance hooks
-├── scripts/
-│   ├── harness-api.mjs      # Shared Harness REST helper
-│   ├── check-templates.mjs  # beforeMCPExecution — template reuse
-│   └── validate-policies.mjs # afterMCPExecution — policy evaluation
-├── rules/
-│   └── harness.mdc          # Workspace rule — MCP conventions
-├── skills/                  # 29 Harness skills
-│   ├── analyze-costs/
-│   ├── audit-report/
-│   ├── chaos-experiment/
-│   ├── create-agent/
-│   ├── create-agent-template/
-│   ├── create-connector/
-│   ├── create-environment/
-│   ├── create-infrastructure/
-│   ├── create-pipeline/
-│   ├── create-pipeline-v1/
-│   ├── create-policy/
-│   ├── create-secret/
-│   ├── create-service/
-│   ├── create-template/
-│   ├── create-trigger/
-│   ├── debug-pipeline/
-│   ├── dora-metrics/
-│   ├── gitops-status/
-│   ├── manage-delegates/
-│   ├── manage-feature-flags/
-│   ├── manage-freeze-windows/
-│   ├── manage-pull-requests/
-│   ├── manage-roles/
-│   ├── manage-users/
-│   ├── migrate-pipeline/
-│   ├── run-pipeline/
-│   ├── scorecard-review/
-│   ├── security-report/
-│   └── template-usage/
-├── LICENSE
-└── README.md
-```
 
 ---
 
