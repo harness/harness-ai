@@ -1,7 +1,10 @@
 {
   "mcpServers": {
     "harness": {
-      "url": "https://mcp.harness.io/mcp"
+      "url": "https://mcp.harness.io/mcp",
+      "auth": {
+        "CLIENT_ID": "mcp-client"
+      }
     }
   }
 }

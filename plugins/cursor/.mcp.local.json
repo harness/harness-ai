@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "harness": {
+      "command": "npx",
+      "args": ["-y", "harness-mcp-v2", "stdio"],
+      "env": {
+        "HARNESS_API_KEY": "${HARNESS_API_KEY}",
+        "HARNESS_ACCOUNT_ID": "${HARNESS_ACCOUNT_ID}",
+        "HARNESS_BASE_URL": "${HARNESS_BASE_URL}"
+      }
+    }
+  }
+}

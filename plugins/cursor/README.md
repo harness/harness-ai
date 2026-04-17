@@ -107,7 +107,13 @@ By default the plugin connects to the **remote Harness MCP server** at `https://
 
 ### 3. Optional: OSS MCP with a PAT
 
-If you need to run against a self-hosted Harness instance, an air-gapped environment, or just prefer local execution, swap the remote URL for the OSS server. Edit `plugins/cursor/mcp.json`:
+If you need to run against a self-hosted Harness instance, an air-gapped environment, or just prefer local execution, swap the remote URL for the OSS server. A ready-to-use sample lives at `plugins/cursor/.mcp.local.json` — copy its contents over `mcp.json`:
+
+```bash
+cp plugins/cursor/.mcp.local.json plugins/cursor/mcp.json
+```
+
+Contents (`plugins/cursor/.mcp.local.json`):
 
 ```json
 {
