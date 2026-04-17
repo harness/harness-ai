@@ -1,8 +1,6 @@
 # Harness AI
 
-> Natural-language DevOps for every AI coding assistant.
-
-[![License](https://img.shields.io/github/license/harness/harness-ai)](LICENSE)
+[![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![Cursor Plugin CI](https://github.com/harness/harness-ai/actions/workflows/cursor-plugin.yml/badge.svg)](https://github.com/harness/harness-ai/actions/workflows/cursor-plugin.yml)
 
 **Harness AI** packages the Harness platform — pipelines, GitOps, secrets, feature flags, cloud cost, chaos, DORA metrics, policy-as-code — as plugins and extensions for the AI coding assistants you already use: **Cursor**, **Claude Code**, **VS Code + Copilot**, and **Gemini CLI**. One source of truth for skills, MCP wiring, governance hooks, and workspace rules — distributed to each environment in the shape that platform expects.
@@ -37,7 +35,7 @@ cd harness-ai/plugins/claude && claude /plugin install .
 
 Details: [`plugins/claude/README.md`](plugins/claude/README.md).
 
-### VS Code + Copilot (preview)
+### VS Code + Copilot (Preview)
 
 VS Code agent plugins are in preview. Enable `chat.plugins.enabled: true`, then add this repo as a marketplace:
 
@@ -59,7 +57,7 @@ Details: [`extensions/gemini/README.md`](extensions/gemini/README.md).
 
 ---
 
-## What's inside
+## What's Inside
 
 All four packages ship the same surface, adapted to each platform's conventions:
 
@@ -68,7 +66,7 @@ All four packages ship the same surface, adapted to each platform's conventions:
 - **Workspace rules** — scope discipline, dependency checks, URL extraction for Harness UI links.
 - **Governance hooks** *(Cursor plugin today)* — surface reusable templates before creating a raw pipeline, and evaluate pipeline YAML against the Harness Policy Engine.
 
-### Skill categories
+### Skill Categories
 
 | Category | Skills |
 |----------|--------|
@@ -83,7 +81,7 @@ The full, authoritative catalog lives in [harness/harness-skills](https://github
 
 ---
 
-## MCP connection modes
+## MCP Connection Modes
 
 | Mode | URL / command | Auth | Default for |
 |------|---------------|------|-------------|
@@ -107,7 +105,7 @@ We welcome contributions — new skills, hook improvements, additional platform 
 
 Each package versions independently. Release process and tag convention: [`docs/RELEASING.md`](docs/RELEASING.md).
 
-## Related repositories
+## Related Repositories
 
 - [harness/mcp-server](https://github.com/harness/mcp-server) — Harness MCP server implementation.
 - [harness/harness-skills](https://github.com/harness/harness-skills) — canonical skill catalog mirrored by every plugin here.
