@@ -313,7 +313,7 @@ Reference matrix values in steps with `<+stage.matrix.TAG>` (e.g. `<+stage.matri
 After generating the YAML, create it in Harness:
 
 1. **Verify the project exists** — List projects with `harness_list` (resource_type: `project`, org_id) to confirm. If the project does not exist, create it first with `harness_create` (resource_type: `project`, body: `{ identifier, name }`) or ask the user.
-2. **Create the pipeline** — Use `harness_create` with `resource_type: "pipeline"` (v0). For v1 YAML use `resource_type: "pipeline_v1"` — but this skill generates v0; use `/create-pipeline-v1` for v1. Serialize the YAML as a **`yamlPipeline`** string in the body. Do not pass a nested JSON `pipeline` object; it causes serialization errors.
+2. **Create the pipeline** — Use `harness_create` with the pipeline YAML serialized as a **`yamlPipeline`** string in the body. Do not pass a nested JSON `pipeline` object; it causes serialization errors.
 
 ```
 Call MCP tool: harness_create

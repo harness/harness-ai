@@ -27,8 +27,7 @@ Track template dependencies and usage across Harness via MCP v2 tools.
 | `harness_search` | `template` | Find templates by keyword across orgs/projects |
 | `harness_list` | `template` | List templates, filter by scope |
 | `harness_get` | `template` | Get template details, versions, and usage references |
-| `harness_describe` | `template` | List supported operations and filters for templates |
-| `harness_schema` | `template` | Get the JSON Schema for template body fields (use for create/update) |
+| `harness_describe` | `template` | Discover template resource schema and fields |
 
 Templates are managed via `harness_list` and `harness_get` only. For creating or updating templates, use the `/create-template` skill.
 

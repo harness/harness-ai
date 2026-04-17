@@ -22,7 +22,7 @@ Generate audit reports and compliance trails using Harness MCP v2 tools.
 ## MCP v2 Tools Used
 
 - `harness_list` with `resource_type: "audit_event"` -- list audit events with filters
-- `harness_describe` with `resource_type: "audit_event"` -- list supported operations and filter parameters (audit events are read-only, so no `harness_schema` needed)
+- `harness_describe` with `resource_type: "audit_event"` -- discover available filters and fields
 
 Audit events are **read-only**. You can list and filter them but cannot create, update, or delete them.
 

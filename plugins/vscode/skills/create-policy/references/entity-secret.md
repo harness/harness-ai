@@ -172,8 +172,8 @@ deny[msg] {
     "timestamp": 1774292341,
     "type": "secret",
     "user": {
-      "email": "jane.doe@harness.io",
-      "name": "Jane Doe"
+      "email": "abhijit.pujare@harness.io",
+      "name": "Abhijit Pujare"
     }
   },
   "secret": {

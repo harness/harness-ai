@@ -34,8 +34,7 @@ Manage Harness RBAC (Role-Based Access Control) via MCP v2 tools.
 | `harness_get` | `permission` | Get permission details |
 | `harness_list` | `resource_group` | List resource groups |
 | `harness_get` | `resource_group` | Get resource group details |
-| `harness_describe` | `role` | List supported operations and filters for roles |
-| `harness_schema` | `role` | Get the JSON Schema for `create`/`update` role bodies |
+| `harness_describe` | `role` | Discover role schema |
 | `harness_search` | -- | Search across role-related resources |
 
 For built-in roles (account/org/project/module), resource groups, common permissions, and role assignment structure, consult references/builtin-roles.md.

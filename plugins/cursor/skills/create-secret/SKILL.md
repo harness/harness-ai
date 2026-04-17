@@ -28,8 +28,7 @@ Generate Harness Secret definitions and manage secrets via MCP v2 tools.
 | `harness_create` | `secret` | Create a new secret |
 | `harness_update` | `secret` | Update secret metadata or value |
 | `harness_delete` | `secret` | Delete a secret |
-| `harness_describe` | `secret` | List supported operations, filters, and scope expectations for secrets |
-| `harness_schema` | `secret` | Get the exact JSON Schema for `create`/`update` secret bodies |
+| `harness_describe` | `secret` | Discover secret resource schema |
 
 ## Secret Types
 
