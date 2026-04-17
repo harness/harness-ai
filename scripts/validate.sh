@@ -24,8 +24,6 @@ echo ""
 echo "Validating Claude Plugin..."
 check_file "$REPO_ROOT/plugins/claude/.claude-plugin/plugin.json"
 check_file "$REPO_ROOT/plugins/claude/.mcp.json"
-check_file "$REPO_ROOT/plugins/claude/commands/create-pipeline.md"
-check_file "$REPO_ROOT/plugins/claude/commands/debug-pipeline.md"
 
 echo ""
 echo "Validating Gemini Extension..."

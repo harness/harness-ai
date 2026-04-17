@@ -4,9 +4,8 @@ AI-native interface to Harness CI/CD for Claude Code and Claude Cowork.
 
 ## What You Get
 
-- **11 MCP tools** covering 160+ Harness resource types
-- **29 skills** for multi-step DevOps workflows
-- **Slash commands**: `/harness:create-pipeline`, `/harness:debug-pipeline`, `/harness:run-pipeline`, `/harness:analyze-costs`
+- **Harness MCP server** — consolidated tool surface covering the Harness resource catalog
+- **Skills** — multi-step DevOps workflows that Claude can invoke automatically or via `/harness:<skill-name>` (full catalog lives upstream at [harness/harness-skills](https://github.com/harness/harness-skills))
 
 ## Install
 
