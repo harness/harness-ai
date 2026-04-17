@@ -1,9 +1,9 @@
 ---
-description: Conventions for interacting with Harness via the Harness MCP v2 server — scope, tool selection, and validation.
+description: Conventions for interacting with Harness via the Harness MCP server — scope, tool selection, and validation.
 alwaysApply: true
 ---
 
-# Harness MCP v2 Conventions
+# Harness MCP Conventions
 
 The Harness plugin exposes **11 consolidated MCP tools** that cover 160+ Harness resource types. Use the right tool for the job and always establish scope before making write calls.
 

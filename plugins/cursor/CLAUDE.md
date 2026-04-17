@@ -4,7 +4,7 @@ Instructions for Claude Code (and any other AI agent or human contributor) worki
 
 ## Repository Purpose
 
-This folder packages the Harness MCP v2 server + Harness skills + governance hooks as the **Harness Cursor plugin** subtree inside [harness-ai](https://github.com/harness/harness-ai). The **monorepo root** contains `.cursor-plugin/marketplace.json`, which points at this directory as the plugin `source`. For local validation and CI, treat `plugins/cursor/` as the plugin root (`node scripts/validate-plugin.mjs` from this directory).
+This folder packages the Harness MCP server + Harness skills + governance hooks as the **Harness Cursor plugin** subtree inside [harness-ai](https://github.com/harness/harness-ai). The **monorepo root** contains `.cursor-plugin/marketplace.json`, which points at this directory as the plugin `source`. For local validation and CI, treat `plugins/cursor/` as the plugin root (`node scripts/validate-plugin.mjs` from this directory).
 
 ## Directory layout (inside harness-ai)
 
@@ -48,7 +48,7 @@ YAML frontmatter must open with `---\n` and close with `\n---\n`. Missing the `n
 ## Skill Authoring Standards
 
 - **Directory**: `skills/<kebab-case-name>/SKILL.md`. The skill's `name` frontmatter value must match the directory.
-- **MCP tools**: use the Harness MCP v2 consolidated surface only — `harness_list`, `harness_get`, `harness_create`, `harness_update`, `harness_delete`, `harness_execute`, `harness_search`, `harness_describe`, `harness_schema`, `harness_diagnose`, `harness_status`. Do not reference legacy per-resource tool names.
+- **MCP tools**: use the Harness MCP consolidated surface only — `harness_list`, `harness_get`, `harness_create`, `harness_update`, `harness_delete`, `harness_execute`, `harness_search`, `harness_describe`, `harness_schema`, `harness_diagnose`, `harness_status`. Do not reference legacy per-resource tool names.
 - **Describe vs schema**: use `harness_describe(resource_type=…)` for metadata and operations; use `harness_schema(resource_type=…)` to get the exact JSON Schema for create/update bodies.
 - **Required sections** (match existing skills):
   - `## Instructions` — numbered steps the agent follows
@@ -63,7 +63,7 @@ YAML frontmatter must open with `---\n` and close with `\n---\n`. Missing the `n
     version: <semver>
     mcp-server: harness-mcp-v2
   license: Apache-2.0
-  compatibility: Requires Harness MCP v2 server (harness-mcp-v2)
+  compatibility: Requires Harness MCP server (harness-mcp-v2)
   ```
 - **README sync**: every new skill must appear in the skill table in `README.md`.
 
@@ -127,6 +127,6 @@ When you change one of these, update all of the others:
 - Cursor plugin template — https://github.com/cursor/plugin-template
 - Notion plugin (single-plugin reference) — https://github.com/makenotion/cursor-notion-plugin
 - Harness Skills (upstream) — https://github.com/harness/harness-skills
-- Harness MCP v2 server — https://github.com/harness/mcp-server
+- Harness MCP server — https://github.com/harness/mcp-server
 - Harness Policy as Code — https://developer.harness.io/docs/platform/policy-as-code/overview
 - Cursor hooks documentation — https://cursor.com/docs/agent/hooks

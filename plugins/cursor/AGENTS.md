@@ -4,7 +4,7 @@ Instructions for any AI agent (Cursor, Claude Code, Codex, Aider, etc.) or human
 
 ## Repository Purpose
 
-This folder (`plugins/cursor/` in [harness-ai](https://github.com/harness/harness-ai)) packages the Harness MCP v2 server + Harness skills + governance hooks as the **Harness Cursor plugin**. The monorepo root defines Cursor discovery via `.cursor-plugin/marketplace.json`. Reference: [Cursor multi-plugin repositories](https://cursor.com/docs/reference/plugins#multi-plugin-repositories).
+This folder (`plugins/cursor/` in [harness-ai](https://github.com/harness/harness-ai)) packages the Harness MCP server + Harness skills + governance hooks as the **Harness Cursor plugin**. The monorepo root defines Cursor discovery via `.cursor-plugin/marketplace.json`. Reference: [Cursor multi-plugin repositories](https://cursor.com/docs/reference/plugins#multi-plugin-repositories).
 
 ## Directory layout
 
@@ -33,7 +33,7 @@ YAML frontmatter opens with `---\n` and closes with `\n---\n`. Missing keys fail
 ## Skill Authoring Standards
 
 - **Directory**: `skills/<kebab-case-name>/SKILL.md`. Frontmatter `name` must match the directory.
-- **MCP tools**: use only the Harness MCP v2 consolidated surface — `harness_list`, `harness_get`, `harness_create`, `harness_update`, `harness_delete`, `harness_execute`, `harness_search`, `harness_describe`, `harness_schema`, `harness_diagnose`, `harness_status`. Do not reference legacy per-resource tool names.
+- **MCP tools**: use only the Harness MCP consolidated surface — `harness_list`, `harness_get`, `harness_create`, `harness_update`, `harness_delete`, `harness_execute`, `harness_search`, `harness_describe`, `harness_schema`, `harness_diagnose`, `harness_status`. Do not reference legacy per-resource tool names.
 - **Describe vs schema**: use `harness_describe(resource_type=…)` for metadata and operations; use `harness_schema(resource_type=…)` to get the exact JSON Schema for create/update bodies.
 - **Required sections**: `## Instructions`, `## Examples`, `## Performance Notes`, `## Troubleshooting`.
 - **References**: skill-specific reference files live in `skills/<name>/references/`. Cross-skill references use relative paths like `create-pipeline/references/native-steps.md`.
@@ -44,7 +44,7 @@ YAML frontmatter opens with `---\n` and closes with `\n---\n`. Missing keys fail
     version: <semver>
     mcp-server: harness-mcp-v2
   license: Apache-2.0
-  compatibility: Requires Harness MCP v2 server (harness-mcp-v2)
+  compatibility: Requires Harness MCP server (harness-mcp-v2)
   ```
 - **README sync**: every new skill appears in the README skill table.
 
@@ -109,6 +109,6 @@ Changing one of these requires updating the others:
 - Cursor plugin template — https://github.com/cursor/plugin-template
 - Notion plugin (single-plugin reference) — https://github.com/makenotion/cursor-notion-plugin
 - Harness Skills (upstream) — https://github.com/harness/harness-skills
-- Harness MCP v2 server — https://github.com/harness/mcp-server
+- Harness MCP server — https://github.com/harness/mcp-server
 - Harness Policy as Code — https://developer.harness.io/docs/platform/policy-as-code/overview
 - Cursor hooks documentation — https://cursor.com/docs/agent/hooks

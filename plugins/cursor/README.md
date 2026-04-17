@@ -5,7 +5,7 @@ This directory is the **Harness Cursor plugin** inside the [harness-ai](https://
 The plugin bundles:
 
 - **Harness Skills** that teach Cursor how to plan, build, deploy, and debug on the Harness.io platform
-- The **[Harness MCP v2 Server](https://github.com/harness/mcp-server)**, which gives the agent 11 consolidated tools across 160+ Harness resource types
+- The **[Harness MCP Server](https://github.com/harness/mcp-server)**, which gives the agent 11 consolidated tools across 160+ Harness resource types
 - **Workspace rules** so the agent follows Harness scope, validation, and confirmation conventions out of the box
 
 Install the plugin and every Harness capability — CI/CD, GitOps, secrets, connectors, feature flags, chaos, cloud cost, security, DORA metrics — becomes available inside Cursor.
@@ -14,7 +14,7 @@ Install the plugin and every Harness capability — CI/CD, GitOps, secrets, conn
 
 ## Features
 
-### Harness MCP v2 Server
+### Harness MCP Server
 
 Cursor connects to the Harness MCP server over stdio. Eleven generic tools cover the entire platform:
 
@@ -185,7 +185,7 @@ plugins/cursor/
 │   └── plugin.json          # Plugin manifest
 ├── assets/
 │   └── logo.svg             # Marketplace logo
-├── mcp.json                 # Harness MCP v2 server config
+├── mcp.json                 # Harness MCP server config
 ├── hooks/
 │   └── hooks.json           # MCP governance hooks
 ├── scripts/

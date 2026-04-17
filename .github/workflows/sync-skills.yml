@@ -1,4 +1,4 @@
-name: Sync skills
+name: Sync Skills
 
 on:
   schedule:

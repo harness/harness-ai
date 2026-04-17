@@ -12,7 +12,7 @@ metadata:
   version: 2.1.0
   mcp-server: harness-mcp-v2
 license: Apache-2.0
-compatibility: Requires Harness MCP v2 server (harness-mcp-v2)
+compatibility: Requires Harness MCP server (harness-mcp-v2)
 ---
 
 # Debug Pipeline

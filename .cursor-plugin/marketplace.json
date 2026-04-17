@@ -11,7 +11,7 @@
     {
       "name": "harness",
       "source": "plugins/cursor",
-      "description": "Harness Skills + Harness MCP v2 server packaged for Cursor. Build, debug, deploy, and govern via Harness from Cursor.",
+      "description": "Harness Skills + Harness MCP server packaged for Cursor. Build, debug, deploy, and govern via Harness from Cursor.",
       "repository": "https://github.com/harness/harness-ai"
     }
   ]

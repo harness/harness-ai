@@ -12,14 +12,14 @@ metadata:
   version: 1.0.0
   mcp-server: harness-mcp-v2
 license: Apache-2.0
-compatibility: Requires Harness MCP v2 server (harness-mcp-v2)
+compatibility: Requires Harness MCP server (harness-mcp-v2)
 ---
 
 # Manage Pull Requests
 
-Manage Harness Code pull requests, reviewers, comments, checks, and activity via MCP v2.
+Manage Harness Code pull requests, reviewers, comments, checks, and activity via MCP.
 
-## MCP v2 Tools Used
+## MCP Tools Used
 
 | Tool | Resource Type | Purpose |
 |------|---------------|---------|

@@ -27,7 +27,7 @@ This directory (`plugins/cursor/`) is the **Harness Cursor plugin** shipped insi
 ## Skills
 
 - Path: `skills/<kebab-case>/SKILL.md`.
-- Use only the Harness MCP v2 consolidated tools: `harness_list`, `harness_get`, `harness_create`, `harness_update`, `harness_delete`, `harness_execute`, `harness_search`, `harness_describe`, `harness_schema`, `harness_diagnose`, `harness_status`.
+- Use only the Harness MCP consolidated tools: `harness_list`, `harness_get`, `harness_create`, `harness_update`, `harness_delete`, `harness_execute`, `harness_search`, `harness_describe`, `harness_schema`, `harness_diagnose`, `harness_status`.
 - Required sections: `## Instructions`, `## Examples`, `## Performance Notes`, `## Troubleshooting`.
 - Every new skill gets a row in the README skill table.
 

@@ -1,4 +1,4 @@
-name: Cursor plugin
+name: Cursor Plugin
 
 on:
   push:

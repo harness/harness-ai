@@ -12,14 +12,14 @@ metadata:
   version: 1.0.0
   mcp-server: harness-mcp-v2
 license: Apache-2.0
-compatibility: Requires Harness MCP v2 server (harness-mcp-v2)
+compatibility: Requires Harness MCP server (harness-mcp-v2)
 ---
 
 # Manage Freeze Windows
 
-Create and toggle Harness deployment freeze windows via MCP v2. A freeze window blocks pipeline executions within a time window so you can enforce change freezes for releases, holidays, or maintenance.
+Create and toggle Harness deployment freeze windows via MCP. A freeze window blocks pipeline executions within a time window so you can enforce change freezes for releases, holidays, or maintenance.
 
-## MCP v2 Tools Used
+## MCP Tools Used
 
 | Tool | Resource Type | Purpose |
 |------|---------------|---------|

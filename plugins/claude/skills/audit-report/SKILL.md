@@ -1,7 +1,7 @@
 ---
 name: audit-report
 description: >-
-  Generate audit reports and compliance trails using Harness audit trail data via MCP v2 tools.
+  Generate audit reports and compliance trails using Harness audit trail data via MCP tools.
   Track user actions, resource changes, authentication events, and access patterns across accounts,
   organizations, and projects. Use when asked to audit activity, generate compliance reports,
   investigate security incidents, review user actions, check change logs, or produce SOC2/GDPR/HIPAA
@@ -12,14 +12,14 @@ metadata:
   version: 1.0.0
   mcp-server: harness-mcp-v2
 license: Apache-2.0
-compatibility: Requires Harness MCP v2 server (harness-mcp-v2)
+compatibility: Requires Harness MCP server (harness-mcp-v2)
 ---
 
 # Audit Report Skill
 
-Generate audit reports and compliance trails using Harness MCP v2 tools.
+Generate audit reports and compliance trails using Harness MCP tools.
 
-## MCP v2 Tools Used
+## MCP Tools Used
 
 - `harness_list` with `resource_type: "audit_event"` -- list audit events with filters
 - `harness_describe` with `resource_type: "audit_event"` -- discover available filters and fields
