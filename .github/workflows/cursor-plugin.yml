@@ -1,0 +1,59 @@
+name: Cursor plugin
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "plugins/cursor/**"
+      - ".cursor-plugin/marketplace.json"
+  pull_request:
+    paths:
+      - "plugins/cursor/**"
+      - ".cursor-plugin/marketplace.json"
+
+defaults:
+  run:
+    working-directory: plugins/cursor
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Syntax-check hook scripts
+        run: |
+          for f in scripts/*.mjs; do
+            node --check "$f"
+          done
+
+      - name: Structural validation
+        run: node scripts/validate-plugin.mjs
+
+      - name: Smoke-test hooks fail open without credentials
+        run: |
+          echo '{"tool_name":"MCP:harness_create","tool_input":{"resource_type":"pipeline","body":{"yamlPipeline":"pipeline:\n  name: test"}}}' \
+            | env -u HARNESS_API_KEY -u HARNESS_ACCOUNT_ID ./scripts/check-templates.mjs \
+            | grep -q '"permission":"allow"'
+          echo '{"tool_name":"MCP:harness_create","tool_input":{"resource_type":"pipeline","body":{"yamlPipeline":"pipeline:\n  name: test"}}}' \
+            | env -u HARNESS_API_KEY -u HARNESS_ACCOUNT_ID ./scripts/validate-policies.mjs \
+            | grep -q '^{}$'
+
+      - name: Smoke-test hooks bail on non-pipeline resource types
+        run: |
+          echo '{"tool_name":"MCP:harness_create","tool_input":{"resource_type":"service","body":{}}}' \
+            | ./scripts/check-templates.mjs \
+            | grep -q '"permission":"allow"'
+
+      - name: Smoke-test hooks accept all three pipeline body shapes
+        run: |
+          echo '{"tool_name":"MCP:harness_create","tool_input":{"resource_type":"pipeline_v1","body":"pipeline:\n  name: test"}}' \
+            | env -u HARNESS_API_KEY -u HARNESS_ACCOUNT_ID ./scripts/check-templates.mjs \
+            | grep -q '"permission":"allow"'
+          echo '{"tool_name":"MCP:harness_create","tool_input":{"resource_type":"pipeline","body":{"pipeline":{"name":"test"}}}}' \
+            | env -u HARNESS_API_KEY -u HARNESS_ACCOUNT_ID ./scripts/check-templates.mjs \
+            | grep -q '"permission":"allow"'

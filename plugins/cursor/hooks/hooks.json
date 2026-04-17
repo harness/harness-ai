@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeMCPExecution": [
+      {
+        "command": "./scripts/check-templates.mjs",
+        "matcher": "MCP:harness_create",
+        "timeout": 20
+      }
+    ],
+    "afterMCPExecution": [
+      {
+        "command": "./scripts/validate-policies.mjs",
+        "matcher": "MCP:harness_create|MCP:harness_update",
+        "timeout": 20
+      }
+    ]
+  }
+}

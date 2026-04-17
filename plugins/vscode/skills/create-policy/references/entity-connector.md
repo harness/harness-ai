@@ -220,8 +220,8 @@ deny[msg] {
     "timestamp": 1774285364,
     "type": "connector",
     "user": {
-      "email": "abhijit.pujare@harness.io",
-      "name": "Abhijit Pujare"
+      "email": "jane.doe@harness.io",
+      "name": "Jane Doe"
     }
   }
 }

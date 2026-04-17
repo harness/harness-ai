@@ -1,6 +1,6 @@
 # Harness DevOps — Gemini CLI Context
 
-You have access to Harness CI/CD tools via 11 MCP tools covering 144+ resource types.
+You have access to Harness CI/CD tools via 11 MCP tools covering 160+ resource types.
 
 ## Operating Model
 

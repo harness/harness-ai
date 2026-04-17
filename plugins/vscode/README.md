@@ -4,8 +4,8 @@ AI-native interface to Harness CI/CD for VS Code and GitHub Copilot.
 
 ## What You Get
 
-- **11 MCP tools** covering 144+ Harness resource types
-- **27 skills** for multi-step DevOps workflows (pipeline creation, failure debugging, cost analysis, etc.)
+- **11 MCP tools** covering 160+ Harness resource types
+- **29 skills** for multi-step DevOps workflows (pipeline creation, failure debugging, cost analysis, etc.)
 - **Custom @harness agent** with Harness operating model built in
 
 ## Install

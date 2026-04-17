@@ -4,7 +4,7 @@ AI-native interface to Harness CI/CD for Gemini CLI.
 
 ## What You Get
 
-- **11 MCP tools** covering 144+ Harness resource types
+- **11 MCP tools** covering 160+ Harness resource types
 - **Persistent context** (GEMINI.md) with operating model and skill summaries
 - **Slash commands**: `/harness:create-pipeline`, `/harness:debug-pipeline`, `/harness:run-pipeline`, `/harness:analyze-costs`
 - **Secure settings** — API key stored in system keychain (local mode)
@@ -12,13 +12,16 @@ AI-native interface to Harness CI/CD for Gemini CLI.
 ## Install
 
 ```bash
-# Remote MCP (default — OAuth, no API key needed)
-gemini extensions install harness/harness-ai/extensions/gemini
+# From the public repo (default — Remote MCP + OAuth, no API key needed)
+gemini extensions install https://github.com/harness/harness-ai
 
-# Local development
-cd extensions/gemini
-gemini extensions link .
+# Local development from a clone
+git clone https://github.com/harness/harness-ai
+cd harness-ai/extensions/gemini && gemini extensions link .
 ```
+
+> Gemini CLI installs the extension from the repo root. The extension
+> definition lives at `extensions/gemini/gemini-extension.json`.
 
 ## Auth Modes
 

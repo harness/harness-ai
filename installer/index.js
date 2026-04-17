@@ -17,7 +17,7 @@ import { join } from "node:path";
 
 const HOME = homedir();
 const MCP_PACKAGE = "harness-mcp-v2";
-const SKILLS_REPO = "thisrohangupta/harness-skills";
+const SKILLS_REPO = "harness/harness-skills";
 
 // Each agent has:
 //   value          — id used by add-mcp (e.g. `add-mcp -a cursor`)
@@ -36,8 +36,8 @@ const AGENTS = [
   // TODO: Claude Desktop runs sandboxed — skills from ~/.claude/skills/ are NOT mounted in the
   // container (/mnt/skills/). MCP tools work, but skills don't. Set skillsAgent to null once
   // confirmed there's no workaround. Tracked: anthropics/claude-code#26254, #31542
-  { value: "claude-desktop", skillsAgent: "claude-code",    globalSkillsDir: null,                             label: "Claude Desktop",     check: () => hasApp("Claude.app") },
-  { value: "codex",          skillsAgent: "codex",          globalSkillsDir: join(HOME, ".codex", "skills"),   label: "Codex",              check: () => hasCmd("codex") || hasApp("Codex.app") },
+  { value: "claude-desktop", skillsAgent: "claude-code",    globalSkillsDir: null,                             label: "Claude Desktop (MCP only — skills sandboxed)",     check: () => hasApp("Claude.app") },
+  { value: "codex",          skillsAgent: "codex",          globalSkillsDir: join(HOME, ".codex", "skills"),   label: "Codex",              check: () => hasCmd("codex") },
   { value: "gemini-cli",     skillsAgent: "gemini-cli",     globalSkillsDir: join(HOME, ".gemini", "skills"),  label: "Gemini CLI",         check: () => hasCmd("gemini") },
   { value: "cline",          skillsAgent: "cline",          globalSkillsDir: null,                             label: "Cline",              check: () => hasConfig("Library/Application Support/Code/User/globalStorage/saoudrizwan.claude-dev") },
   { value: "goose",          skillsAgent: "goose",          globalSkillsDir: null,                             label: "Goose",              check: () => hasCmd("goose") },
@@ -297,10 +297,10 @@ async function install() {
     [
       "This will configure your AI coding agents with:",
       "",
-      "  • MCP tools covering 144+ Harness resource types",
+      "  • MCP tools covering 160+ Harness resource types",
       "    (via add-mcp by Neon)",
       "",
-      "  • 27 DevOps skills for pipelines, deployments, security, costs & more",
+      "  • 29 DevOps skills for pipelines, deployments, security, costs & more",
       "    (via skills by Vercel Labs)",
     ].join("\n"),
     "What you get"
@@ -331,7 +331,7 @@ async function install() {
   // Ask whether to install skills
   const installSkills = await ask(() =>
     p.confirm({
-      message: "Install 27 DevOps skills? (recommended)",
+      message: "Install 29 DevOps skills? (recommended)",
       initialValue: true,
     })
   );
@@ -417,24 +417,33 @@ async function install() {
   const summary = selectedAgents.map((a) => `  ✓ ${a.label}`).join("\n");
   const credsStatus = apiKey ? "configured" : "skipped (run again to add)";
   const skillCount = installSkills ? "installed" : "skipped";
+  const claudeDesktopSelected = selectedAgents.some((a) => a.value === "claude-desktop");
 
-  p.note(
-    [
-      summary,
+  const lines = [
+    summary,
+    "",
+    `MCP tools: configured (${scope})`,
+    `Skills: ${skillCount} (${scope})`,
+    `Credentials: ${credsStatus}`,
+  ];
+  if (claudeDesktopSelected && installSkills) {
+    lines.push(
       "",
-      `MCP tools: configured (${scope})`,
-      `Skills: ${skillCount} (${scope})`,
-      `Credentials: ${credsStatus}`,
-      "",
-      "Open any of the above agents and ask:",
-      '  "List my Harness pipelines"',
-      '  "Debug my last failed deployment"',
-      '  "Create a Kubernetes pipeline"',
-    ].join("\n"),
-    "Setup complete"
+      "Note: Claude Desktop runs sandboxed on macOS — skills installed",
+      "into ~/.claude/skills/ are NOT visible to it. MCP tools work normally.",
+    );
+  }
+  lines.push(
+    "",
+    "Open any of the above agents and ask:",
+    '  "List my Harness pipelines"',
+    '  "Debug my last failed deployment"',
+    '  "Create a Kubernetes pipeline"',
   );
 
-  p.outro("Happy shipping! → https://github.com/thisrohangupta/harness-ai");
+  p.note(lines.join("\n"), "Setup complete");
+
+  p.outro("Happy shipping! → https://github.com/harness/harness-ai");
 }
 
 // --- Entry point ---

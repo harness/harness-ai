@@ -212,7 +212,7 @@ deny[msg] {
     "type": "gitopsApplication",
     "action": "onsave",
     "timestamp": 1700000000,
-    "principalIdentifier": "developer@example.com",
+    "principalIdentifier": "developer@harness.io",
     "principalType": "USER"
   }
 }

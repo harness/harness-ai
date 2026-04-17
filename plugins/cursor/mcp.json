@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "harness": {
+      "command": "npx",
+      "args": ["-y", "harness-mcp-v2@0.9.0", "stdio"],
+      "env": {
+        "HARNESS_API_KEY": "${HARNESS_API_KEY}",
+        "HARNESS_ACCOUNT_ID": "${HARNESS_ACCOUNT_ID}",
+        "HARNESS_BASE_URL": "${HARNESS_BASE_URL}",
+        "HARNESS_ORG": "${HARNESS_ORG}",
+        "HARNESS_PROJECT": "${HARNESS_PROJECT}",
+        "HARNESS_TOOLSETS": "${HARNESS_TOOLSETS}",
+        "HARNESS_PIPELINE_VERSION": "${HARNESS_PIPELINE_VERSION}",
+        "HARNESS_SKIP_ELICITATION": "${HARNESS_SKIP_ELICITATION}",
+        "HARNESS_READ_ONLY": "${HARNESS_READ_ONLY}",
+        "HARNESS_API_TIMEOUT_MS": "${HARNESS_API_TIMEOUT_MS}",
+        "HARNESS_MAX_RETRIES": "${HARNESS_MAX_RETRIES}",
+        "LOG_LEVEL": "${LOG_LEVEL}"
+      }
+    }
+  }
+}

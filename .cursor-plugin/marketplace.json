@@ -1,0 +1,18 @@
+{
+  "name": "harness-ai",
+  "owner": {
+    "name": "Harness",
+    "email": "support@harness.io"
+  },
+  "metadata": {
+    "description": "Harness AI distribution — Cursor IDE plugin (skills, rules, MCP)"
+  },
+  "plugins": [
+    {
+      "name": "harness",
+      "source": "plugins/cursor",
+      "description": "Harness Skills + Harness MCP v2 server packaged for Cursor. Build, debug, deploy, and govern via Harness from Cursor.",
+      "repository": "https://github.com/harness/harness-ai"
+    }
+  ]
+}

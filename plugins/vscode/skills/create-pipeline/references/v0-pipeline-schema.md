@@ -409,7 +409,7 @@ pipeline:
       notificationMethod:
         type: Email
         spec:
-          recipients: [team@example.com]
+          recipients: [team@harness.io]
 ```
 
 Event types: AllEvents, PipelineStart, PipelineSuccess, PipelineFailed, PipelinePaused, StageStart, StageSuccess, StageFailed, StepFailed

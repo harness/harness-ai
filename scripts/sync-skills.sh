@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# Sync skills from a local checkout of harness/harness-skills into every
+# plugin tree. Source of truth is upstream — edit there, then run this.
+# CI (.github/workflows/sync-skills.yml) runs this daily and opens a PR.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -19,6 +22,7 @@ fi
 TARGETS=(
   "$REPO_ROOT/plugins/vscode/skills"
   "$REPO_ROOT/plugins/claude/skills"
+  "$REPO_ROOT/plugins/cursor/skills"
 )
 
 SKILL_COUNT=0

@@ -1,0 +1,27 @@
+{
+  "name": "harness",
+  "displayName": "Harness",
+  "version": "0.1.0",
+  "description": "Harness Skills + Harness MCP v2 server packaged as a Cursor plugin. Build, debug, deploy, and govern via Harness from Cursor.",
+  "author": {
+    "name": "Harness",
+    "email": "support@harness.io"
+  },
+  "homepage": "https://harness.io",
+  "repository": "https://github.com/harness/harness-ai",
+  "license": "Apache-2.0",
+  "logo": "assets/logo.svg",
+  "mcpServers": "./mcp.json",
+  "keywords": [
+    "harness",
+    "ci-cd",
+    "devops",
+    "pipelines",
+    "kubernetes",
+    "mcp",
+    "gitops",
+    "feature-flags",
+    "cloud-cost",
+    "chaos-engineering"
+  ]
+}

@@ -34,6 +34,19 @@ check_file "$REPO_ROOT/extensions/gemini/GEMINI.md"
 check_file "$REPO_ROOT/extensions/gemini/commands/harness/create-pipeline.toml"
 
 echo ""
+echo "Validating Cursor Plugin..."
+check_file "$REPO_ROOT/.cursor-plugin/marketplace.json"
+check_file "$REPO_ROOT/plugins/cursor/.cursor-plugin/plugin.json"
+check_file "$REPO_ROOT/plugins/cursor/mcp.json"
+check_file "$REPO_ROOT/plugins/cursor/hooks/hooks.json"
+if ! ( cd "$REPO_ROOT/plugins/cursor" && node scripts/validate-plugin.mjs >/dev/null ); then
+  echo "  ✗ plugins/cursor/scripts/validate-plugin.mjs failed"
+  ERRORS=$((ERRORS + 1))
+else
+  echo "  ✓ plugins/cursor structural validation"
+fi
+
+echo ""
 if [[ $ERRORS -gt 0 ]]; then
   echo "Validation failed with $ERRORS error(s)."
   exit 1

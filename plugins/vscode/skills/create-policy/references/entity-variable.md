@@ -50,7 +50,7 @@ deny[msg] {
   },
   "metadata": {
     "action": "onsave",
-    "user": { "name": "Cassie Cook", "email": "cassiecook@harness.io" },
+    "user": { "name": "Jane Doe", "email": "jane.doe@harness.io" },
     "roleAssignmentMetadata": [
       { "roleIdentifier": "_account_viewer", "roleName": "Account Viewer" },
       { "roleIdentifier": "_account_admin", "roleName": "Account Admin" }

@@ -21,7 +21,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/thisrohangupta/harness-ai.git",
+    "url": "https://github.com/harness/harness-ai.git",
     "directory": "installer"
   },
   "dependencies": {

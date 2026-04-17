@@ -1,0 +1,98 @@
+---
+description: Conventions for interacting with Harness via the Harness MCP v2 server — scope, tool selection, and validation.
+alwaysApply: true
+---
+
+# Harness MCP v2 Conventions
+
+The Harness plugin exposes **11 consolidated MCP tools** that cover 160+ Harness resource types. Use the right tool for the job and always establish scope before making write calls.
+
+## Tool Catalog
+
+| Tool | Purpose |
+|------|---------|
+| `harness_list` | List resources with filters and pagination |
+| `harness_get` | Get a single resource by ID |
+| `harness_create` | Create a resource (server prompts for confirmation via elicitation) |
+| `harness_update` | Update a resource (server prompts for confirmation via elicitation) |
+| `harness_delete` | Delete a resource (server prompts for confirmation via elicitation) |
+| `harness_execute` | Run, retry, interrupt, sync, toggle, approve, reject, test_connection |
+| `harness_search` | Cross-resource keyword search |
+| `harness_describe` | Local metadata lookup — list resource types and their operations (no API call) |
+| `harness_schema` | Fetch the exact JSON Schema for a resource's `create`/`update` body payload |
+| `harness_diagnose` | Pipeline failure analysis |
+| `harness_status` | Project health overview |
+
+All tools take a `resource_type` (e.g. `pipeline`, `pipeline_v1`, `secret`, `template`) and most take `org_id` / `project_id`. Harness UI URLs can be passed directly — MCP tools auto-extract scope IDs.
+
+**Pipeline v0 vs v1**: the server registers both `pipeline` (legacy v0 YAML) and `pipeline_v1` (simplified v1 YAML — agent pipelines, simpler stages/steps). Prefer `pipeline_v1` for new work when `HARNESS_PIPELINE_VERSION=1`; use `pipeline` for legacy edits. The governance hooks match both types.
+
+## Scope & Context Convention
+
+Before any MCP call that creates or modifies resources:
+
+1. **Ask for `org_id` and `project_id`** if not already known. Most Harness resources are scoped to an org + project.
+2. **Use `harness_list`** to verify referenced resources exist before creating dependents. Example: confirm a connector exists before referencing it in a service.
+3. **Scope visibility rules**:
+   - Account-level resources (no org/project) — visible to all orgs and projects.
+   - Org-level resources — visible to all projects in that org.
+   - Project-level resources — visible only within that project.
+4. **If the user provides a Harness UI URL**, pass it directly to the tool via the `url` parameter — it auto-extracts `org_id`, `project_id`, `resource_type`, and `resource_id`. Nested resources (e.g. PR URLs) also auto-extract `repo_id` and `pr_number`.
+
+## Schema Discovery
+
+Two tools answer "what fields does this resource take?" — use the right one:
+
+- `harness_describe(resource_type="<type>")` — **local**, no API call. Returns the list of operations, identifier fields, and metadata. Start here to confirm the resource exists and which operations it supports.
+- `harness_schema(resource_type="<type>")` — returns the **exact JSON Schema** for the `create`/`update` body. Use this before constructing a create/update payload, or when the API rejects a write with a validation error.
+
+On validation errors, read the API error message to identify the missing or invalid field, then fix and retry.
+
+## Pipeline Body Shapes
+
+`harness_create` / `harness_update` accept **three** body shapes for pipelines and input sets:
+
+1. `body: "<yaml string>"` — recommended for complex pipelines. Passed through as-is.
+2. `body: { yamlPipeline: "<yaml string>" }` — object with a YAML field.
+3. `body: { pipeline: { ... } }` — pure JSON, server converts to YAML.
+
+Prefer (1) for anything non-trivial. The governance hooks understand all three shapes.
+
+## Cross-Skill Workflows
+
+When a user asks for end-to-end setup (e.g. "deploy my new microservice"), follow dependency order — do not skip steps or create resources that reference connectors/secrets that don't exist yet:
+
+1. `/create-connector` — Git, cloud, registry, cluster connectors
+2. `/create-secret` — auth tokens, SSH keys, credentials
+3. `/create-service` — reference the Git + Docker connectors
+4. `/create-environment` — PreProduction and/or Production
+5. `/create-infrastructure` — reference the K8s/cloud connector
+6. `/create-pipeline` — reference the service, environment, infrastructure
+7. `/create-trigger` — automate with webhook or artifact triggers
+
+**Key rule:** Always check if a referenced resource exists before creating something that depends on it. If it doesn't exist, create it first.
+
+## Confirmation for Write Operations
+
+The MCP server itself emits an **elicitation** prompt before every `harness_create`, `harness_update`, `harness_delete`, and `harness_execute` call, showing the payload and requiring user approval. Cursor renders this as a native confirmation dialog.
+
+- **Your job as the agent**: show the payload preview in chat first so the user can review *before* the dialog appears. Do not also block on a separate text-based confirmation — that double-prompts the user.
+- To skip the server-side dialog entirely for autonomous operation, set `HARNESS_SKIP_ELICITATION=true`. The agent's chat-level preview remains.
+
+## Governance Hooks
+
+This plugin ships with two MCP hooks (see `hooks/hooks.json`) that enforce Harness governance automatically:
+
+1. **`beforeMCPExecution` on `MCP:harness_create`** — runs `scripts/check-templates.mjs`. Fires for `resource_type` in `{pipeline, pipeline_v1}`. When the pipeline body does not reference a `templateRef` / `useFromStage`, the hook lists Pipeline/Stage/StepGroup/Step templates available at account/org/project scope and returns `permission: "ask"` with the catalog. **When this hook fires, surface every candidate template to the user and ask whether to reuse one via `templateRef` before proceeding.**
+
+2. **`afterMCPExecution` on `MCP:harness_create` / `MCP:harness_update`** — runs `scripts/validate-policies.mjs`. For pipeline writes (`pipeline` or `pipeline_v1`), the hook calls the Harness Policy Engine (`/pm/api/v1/policy/evaluations/evaluate-by-type`) with the pipeline payload and attaches the evaluation result (pass/fail per policy, scope) as `additional_context`. **Treat any failures in this context as blocking — surface them to the user and propose YAML edits to remediate before re-running.**
+
+Both hooks fail open: if `HARNESS_API_KEY` / `HARNESS_ACCOUNT_ID` are missing or the API returns an error, the hook emits `permission: "allow"` / empty context so the agent is not blocked on infra issues. Credentials live in the environment and are inherited from Cursor.
+
+## Error Recovery
+
+- `DUPLICATE_IDENTIFIER` — resource already exists; use `harness_update` instead of `harness_create`.
+- `CONNECTOR_NOT_FOUND` / `SECRET_NOT_FOUND` — create the dependency first or fix the identifier.
+- `ACCESS_DENIED` — the API key lacks permission; surface this back to the user rather than retrying.
+- `Project not found` — verify with `harness_list` (resource_type: `project`, org_id) before retrying.
+- Validation error on create/update — call `harness_schema(resource_type=…)` to see the exact required fields and retry with the corrected body.
