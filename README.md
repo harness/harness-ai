@@ -41,16 +41,6 @@ All packages ship with both connection modes pre-configured:
 - **Remote MCP** (default): `https://mcp.harness.io/mcp` — zero install, OAuth handles auth
 - **OSS MCP** (fallback): `npx harness-mcp-v2` — runs locally, requires PAT
 
-## Auto-Installer
-
-For IDEs without a marketplace plugin flow (Windsurf, Codex, OpenCode), or as a fallback:
-
-```bash
-npx harness-mcp-v2 install           # Interactive mode
-npx harness-mcp-v2 install --remote  # Remote MCP for all detected IDEs
-npx harness-mcp-v2 install --local   # Local MCP with PAT
-```
-
 ## Development
 
 ```bash

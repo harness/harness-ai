@@ -9,5 +9,5 @@ node_modules/
 .cursor/*
 !.cursor/plans/
 
-# npm packaging output (e.g. installer/harness-setup-*.tgz)
+# npm packaging output
 *.tgz
