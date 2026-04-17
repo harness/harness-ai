@@ -1,7 +1,7 @@
 ---
 name: template-usage
 description: >-
-  Track Harness template dependencies, usage, and adoption via MCP tools. Find which pipelines
+  Track Harness template dependencies, usage, and adoption via MCP v2 tools. Find which pipelines
   or other templates reference a given template, analyze update impact, identify unused templates,
   and compare version adoption. Use when asked about template usage, template references, template
   dependencies, impact analysis before updating a template, finding unused templates, or tracking
@@ -13,14 +13,14 @@ metadata:
   version: 1.0.0
   mcp-server: harness-mcp-v2
 license: Apache-2.0
-compatibility: Requires Harness MCP server (harness-mcp-v2)
+compatibility: Requires Harness MCP v2 server (harness-mcp-v2)
 ---
 
 # Template Usage Skill
 
-Track template dependencies and usage across Harness via MCP tools.
+Track template dependencies and usage across Harness via MCP v2 tools.
 
-## MCP Tools Used
+## MCP v2 Tools Used
 
 | Tool | Resource Type | Purpose |
 |------|--------------|---------|

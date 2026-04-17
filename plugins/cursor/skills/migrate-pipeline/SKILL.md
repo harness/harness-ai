@@ -11,7 +11,7 @@ metadata:
   version: 2.0.0
   mcp-server: harness-mcp-v2
 license: Apache-2.0
-compatibility: Requires Harness MCP server (harness-mcp-v2)
+compatibility: Requires Harness MCP v2 server (harness-mcp-v2)
 ---
 
 # Migrate Pipeline
@@ -98,34 +98,17 @@ stages:
 
 Present both v0 and v1 side-by-side for review.
 
-### Step 4: Create or Update in Harness (Optional)
-
-v0 and v1 pipelines are **distinct resource types** in the MCP server (`pipeline` vs `pipeline_v1`). You cannot update a v0 pipeline in-place with v1 YAML. Choose one path:
-
-**Path A — Create a new v1 pipeline** (recommended, non-destructive):
-
-```
-Call MCP tool: harness_create
-Parameters:
-  resource_type: "pipeline_v1"
-  org_id: "<organization>"
-  project_id: "<project>"
-  body: { yamlPipeline: "<converted v1 pipeline YAML string>" }
-```
-
-**Path B — Update an existing v1 pipeline** (only if the v1 pipeline already exists under that ID):
+### Step 4: Update in Harness (Optional)
 
 ```
 Call MCP tool: harness_update
 Parameters:
-  resource_type: "pipeline_v1"
+  resource_type: "pipeline"
   resource_id: "<pipeline_identifier>"
   org_id: "<organization>"
   project_id: "<project>"
-  body: { yamlPipeline: "<converted v1 pipeline YAML string>" }
+  body: <v1 pipeline YAML>
 ```
-
-Do not pass a raw YAML blob without wrapping in `{ yamlPipeline: ... }` or as a raw string — passing a nested JSON `pipeline` object causes serialization errors.
 
 ## Migration Checklist
 

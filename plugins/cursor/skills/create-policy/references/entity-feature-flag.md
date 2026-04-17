@@ -24,7 +24,7 @@ input.featureFlag.supportingMetrics[i]
 input.featureFlag.rolloutStatusName
 input.featureFlag.pendingChangeRequests
 input.featureFlag.hasPendingStatusChange
-input.featureFlag.tags[i]                   # array of strings like "owner:alice@harness.io"
+input.featureFlag.tags[i]                   # array of strings like "owner:alice@example.com"
 input.featureFlag.lastTrafficDate
 input.featureFlag.governanceType            # "fmeFeatureFlag"
 

@@ -988,7 +988,7 @@ deny[msg] {
   "metadata": {
     "type": "pipeline",
     "action": "onrun",
-    "user": {"name": "Jane Doe", "email": "jane.doe@harness.io"},
+    "user": {"name": "Rishabh Gupta", "email": "rishabh.gupta@harness.io"},
     "roleAssignmentMetadata": [
       {"roleIdentifier": "_account_admin", "roleName": "Account Admin"}
     ]

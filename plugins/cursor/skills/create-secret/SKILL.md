@@ -1,7 +1,7 @@
 ---
 name: create-secret
 description: >-
-  Generate Harness Secret definitions and manage secrets via MCP tools. Supports SecretText,
+  Generate Harness Secret definitions and manage secrets via MCP v2 tools. Supports SecretText,
   SecretFile, SSHKey, and WinRmCredentials types with configurable secret managers (Harness built-in,
   HashiCorp Vault, AWS Secrets Manager, Azure Key Vault, GCP Secret Manager). Use when asked to
   create a secret, store credentials, manage API keys, set up SSH keys, configure WinRM credentials,
@@ -12,14 +12,14 @@ metadata:
   version: 1.0.0
   mcp-server: harness-mcp-v2
 license: Apache-2.0
-compatibility: Requires Harness MCP server (harness-mcp-v2)
+compatibility: Requires Harness MCP v2 server (harness-mcp-v2)
 ---
 
 # Create Secret Skill
 
-Generate Harness Secret definitions and manage secrets via MCP tools.
+Generate Harness Secret definitions and manage secrets via MCP v2 tools.
 
-## MCP Tools Used
+## MCP v2 Tools Used
 
 | Tool | Resource Type | Purpose |
 |------|--------------|---------|
@@ -28,8 +28,7 @@ Generate Harness Secret definitions and manage secrets via MCP tools.
 | `harness_create` | `secret` | Create a new secret |
 | `harness_update` | `secret` | Update secret metadata or value |
 | `harness_delete` | `secret` | Delete a secret |
-| `harness_describe` | `secret` | List supported operations, filters, and scope expectations for secrets |
-| `harness_schema` | `secret` | Get the exact JSON Schema for `create`/`update` secret bodies |
+| `harness_describe` | `secret` | Discover secret resource schema |
 
 ## Secret Types
 

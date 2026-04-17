@@ -1,6 +1,6 @@
 # Harness v1 Pipeline Spec Reference
 
-Complete reference for the Harness v1 simplified pipeline YAML syntax.
+Complete reference for the v1 simplified pipeline YAML syntax. Source: https://github.com/thisrohangupta/spec
 
 ## Pipeline Structure
 

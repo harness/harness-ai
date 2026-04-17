@@ -1,7 +1,7 @@
 ---
 name: manage-roles
 description: >-
-  Manage Harness RBAC roles, role assignments, permissions, and resource groups via MCP tools.
+  Manage Harness RBAC roles, role assignments, permissions, and resource groups via MCP v2 tools.
   List, create, update, and delete custom roles. View role assignments and permissions for users,
   groups, and service accounts. Use when asked to manage access control, assign roles, check
   permissions, create custom roles, review RBAC configuration, onboard users, or audit access.
@@ -12,14 +12,14 @@ metadata:
   version: 1.0.0
   mcp-server: harness-mcp-v2
 license: Apache-2.0
-compatibility: Requires Harness MCP server (harness-mcp-v2)
+compatibility: Requires Harness MCP v2 server (harness-mcp-v2)
 ---
 
 # Manage Roles Skill
 
-Manage Harness RBAC (Role-Based Access Control) via MCP tools.
+Manage Harness RBAC (Role-Based Access Control) via MCP v2 tools.
 
-## MCP Tools Used
+## MCP v2 Tools Used
 
 | Tool | Resource Type | Operations |
 |------|--------------|------------|
@@ -34,8 +34,7 @@ Manage Harness RBAC (Role-Based Access Control) via MCP tools.
 | `harness_get` | `permission` | Get permission details |
 | `harness_list` | `resource_group` | List resource groups |
 | `harness_get` | `resource_group` | Get resource group details |
-| `harness_describe` | `role` | List supported operations and filters for roles |
-| `harness_schema` | `role` | Get the JSON Schema for `create`/`update` role bodies |
+| `harness_describe` | `role` | Discover role schema |
 | `harness_search` | -- | Search across role-related resources |
 
 For built-in roles (account/org/project/module), resource groups, common permissions, and role assignment structure, consult references/builtin-roles.md.

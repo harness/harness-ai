@@ -13,7 +13,7 @@ metadata:
   version: 3.1.0
   mcp-server: harness-mcp-v2
 license: Apache-2.0
-compatibility: Requires Harness MCP server (harness-mcp-v2)
+compatibility: Requires Harness MCP v2 server (harness-mcp-v2)
 ---
 
 # Create Pipeline v1
@@ -40,7 +40,7 @@ Generate Harness v1 simplified Pipeline YAML and optionally push to Harness via 
    - HTTP requests → use `action: uses: http` or `template: uses: httpStep` (never `run: curl`)
    - Use `run:` steps only for custom build/test/lint commands with no native equivalent
 5. **Generate v1 YAML** using flat structure, `${{ }}` expressions, `script` field for run steps, and `action`/`template` steps for deployments
-6. **Optionally create via MCP** using `harness_create` with `resource_type: "pipeline_v1"` (v1 pipelines are a distinct resource type from v0 `pipeline`)
+6. **Optionally create via MCP** using `harness_create` with resource_type `pipeline`
 
 ## v1 Key Differences from v0
 
@@ -421,18 +421,16 @@ pipeline:
 ## Creating via MCP
 
 1. **Verify the project exists** — List projects with `harness_list` (resource_type: `project`, org_id) to confirm. If the project does not exist, create it first with `harness_create` (resource_type: `project`, body: `{ identifier, name }`) or ask the user.
-2. **Create the pipeline** — Use `harness_create` with `resource_type: "pipeline_v1"` (v1 is a distinct resource type from v0 `pipeline`). Serialize the v1 YAML as a **`yamlPipeline`** string in the body or pass the raw YAML string directly. Do not pass a nested JSON `pipeline` object; it causes serialization errors.
+2. **Create the pipeline** — Use `harness_create` with the v1 pipeline YAML serialized as a **`yamlPipeline`** string in the body. Do not pass a nested JSON `pipeline` object; it causes serialization errors.
 
 ```
 Call MCP tool: harness_create
 Parameters:
-  resource_type: "pipeline_v1"
+  resource_type: "pipeline"
   org_id: "<organization>"
   project_id: "<project>"
   body: { yamlPipeline: "<full v1 pipeline YAML string, including 'pipeline:' root key>" }
 ```
-
-Alternatively you can pass the body as a raw YAML string: `body: "pipeline:\n  name: ...\n  stages: ..."`.
 
 ## Examples
 
@@ -480,7 +478,6 @@ Create a v1 pipeline that tests across Go 1.19, 1.20, and 1.21 using matrix stra
 ### MCP Errors
 
 - **Project not found** — Verify the project exists with `harness_list` (resource_type: `project`, org_id). Create it first or confirm org_id/project_id are correct.
-- **Wrong resource type** — v1 pipelines use `resource_type: "pipeline_v1"`, not `"pipeline"`. The v0 `pipeline` resource type will reject v1 YAML.
-- **Missing required fields for pipeline: pipeline** — Pass the body as `{ yamlPipeline: "<full v1 pipeline YAML string>" }`, a raw YAML string, or `{ pipeline: {...} }`. Do not mix shapes.
-- `DUPLICATE_IDENTIFIER` — Pipeline exists; use `harness_update` with the same `resource_type: "pipeline_v1"`.
-- `INVALID_REQUEST` — Check YAML structure matches v1 schema. Use `harness_schema(resource_type="pipeline_v1")` for the authoritative body schema.
+- **Missing required fields for pipeline: pipeline** — Pass the body as `{ yamlPipeline: "<full v1 pipeline YAML string>" }` instead of a nested JSON `pipeline` object.
+- `DUPLICATE_IDENTIFIER` — Pipeline exists; use `harness_update`
+- `INVALID_REQUEST` — Check YAML structure matches v1 schema

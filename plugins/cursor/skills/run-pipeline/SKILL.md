@@ -13,7 +13,7 @@ metadata:
   version: 2.1.0
   mcp-server: harness-mcp-v2
 license: Apache-2.0
-compatibility: Requires Harness MCP server (harness-mcp-v2)
+compatibility: Requires Harness MCP v2 server (harness-mcp-v2)
 ---
 
 # Run Pipeline
@@ -156,12 +156,15 @@ Stages: <stage results table>
 
 ## Retrying Failed Executions
 
+Retry is an action on `pipeline` (not `execution`). Pass the pipeline ID as `resource_id` and the failed execution's ID as `execution_id`:
+
 ```
 Call MCP tool: harness_execute
 Parameters:
-  resource_type: "execution"
+  resource_type: "pipeline"
   action: "retry"
-  resource_id: "<execution_id>"
+  resource_id: "<pipeline_id>"
+  execution_id: "<execution_id>"
   org_id: "<organization>"
   project_id: "<project>"
 ```

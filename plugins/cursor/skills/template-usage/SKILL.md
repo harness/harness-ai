@@ -1,7 +1,7 @@
 ---
 name: template-usage
 description: >-
-  Track Harness template dependencies, usage, and adoption via MCP tools. Find which pipelines
+  Track Harness template dependencies, usage, and adoption via MCP v2 tools. Find which pipelines
   or other templates reference a given template, analyze update impact, identify unused templates,
   and compare version adoption. Use when asked about template usage, template references, template
   dependencies, impact analysis before updating a template, finding unused templates, or tracking
@@ -13,22 +13,21 @@ metadata:
   version: 1.0.0
   mcp-server: harness-mcp-v2
 license: Apache-2.0
-compatibility: Requires Harness MCP server (harness-mcp-v2)
+compatibility: Requires Harness MCP v2 server (harness-mcp-v2)
 ---
 
 # Template Usage Skill
 
-Track template dependencies and usage across Harness via MCP tools.
+Track template dependencies and usage across Harness via MCP v2 tools.
 
-## MCP Tools Used
+## MCP v2 Tools Used
 
 | Tool | Resource Type | Purpose |
 |------|--------------|---------|
 | `harness_search` | `template` | Find templates by keyword across orgs/projects |
 | `harness_list` | `template` | List templates, filter by scope |
 | `harness_get` | `template` | Get template details, versions, and usage references |
-| `harness_describe` | `template` | List supported operations and filters for templates |
-| `harness_schema` | `template` | Get the JSON Schema for template body fields (use for create/update) |
+| `harness_describe` | `template` | Discover template resource schema and fields |
 
 Templates are managed via `harness_list` and `harness_get` only. For creating or updating templates, use the `/create-template` skill.
 
