@@ -101,35 +101,52 @@ Both hooks accept all three body shapes `harness_create` supports — raw YAML s
 
 In Cursor, add this plugin from the marketplace or install from GitHub using the **harness-ai** repository URL (see [Submitting a plugin](https://cursor.com/docs/reference/plugins#submitting-a-plugin)). The plugin source path is `plugins/cursor/`, listed in `.cursor-plugin/marketplace.json` at the repo root.
 
-### 2. Configure credentials
+### 2. Authenticate
 
-The Harness MCP server requires an API key and account ID. Set these as environment variables before starting Cursor:
+By default the plugin connects to the **remote Harness MCP server** at `https://mcp.harness.io/mcp`. The first tool call opens an OAuth consent flow in your browser — approve and you're in. No PAT, no config.
 
-```bash
-# Required
-export HARNESS_API_KEY="pat.xxxxx.xxxxx.xxxxx"
-export HARNESS_ACCOUNT_ID="your-account-id"   # auto-extracted from PAT if omitted
+### 3. Optional: OSS MCP with a PAT
 
-# Optional — defaults shown
-export HARNESS_BASE_URL="https://app.harness.io"
-export HARNESS_ORG="default"
-export HARNESS_PROJECT=""
-export HARNESS_TOOLSETS=""                    # comma-separated; empty = all enabled
-export HARNESS_PIPELINE_VERSION="0"           # "0" (default) or "1" — prefer pipeline_v1 when "1"
-export HARNESS_SKIP_ELICITATION="false"       # "true" = skip server-side confirmation prompts
-export HARNESS_READ_ONLY="false"              # "true" = reject all write tools
-export HARNESS_API_TIMEOUT_MS="30000"
-export HARNESS_MAX_RETRIES="3"
-export LOG_LEVEL="info"                       # debug | info | warn | error
+If you need to run against a self-hosted Harness instance, an air-gapped environment, or just prefer local execution, swap the remote URL for the OSS server. Edit `plugins/cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "harness": {
+      "command": "npx",
+      "args": ["-y", "harness-mcp-v2", "stdio"],
+      "env": {
+        "HARNESS_API_KEY": "${HARNESS_API_KEY}",
+        "HARNESS_ACCOUNT_ID": "${HARNESS_ACCOUNT_ID}",
+        "HARNESS_BASE_URL": "${HARNESS_BASE_URL}"
+      }
+    }
+  }
+}
 ```
 
-All of these are forwarded to the MCP server via `mcp.json`. Only `HARNESS_API_KEY` is strictly required — account ID is extracted from the token if it's a PAT.
+Then set the required env vars in your shell before starting Cursor:
 
-Get your API key at **Harness UI → Account Settings → Access Control → Service Accounts** (or a personal access token).
+```bash
+export HARNESS_API_KEY="pat.xxxxx.xxxxx.xxxxx"
+export HARNESS_ACCOUNT_ID="your-account-id"            # optional; auto-extracted from PAT
+export HARNESS_BASE_URL="https://app.harness.io"       # optional; self-hosted URL if different
+```
 
-### 3. Optional: run the MCP server from source
+Optional env vars the OSS server also reads: `HARNESS_ORG`, `HARNESS_PROJECT`, `HARNESS_TOOLSETS`, `HARNESS_PIPELINE_VERSION`, `HARNESS_SKIP_ELICITATION`, `HARNESS_READ_ONLY`, `HARNESS_API_TIMEOUT_MS`, `HARNESS_MAX_RETRIES`, `LOG_LEVEL`.
 
-By default `mcp.json` runs `npx -y harness-mcp-v2 stdio`. To develop against a local build instead, edit `mcp.json`:
+Get a PAT at **Harness UI → Account Settings → Access Control → Service Accounts**.
+
+### 4. Governance hooks and credentials
+
+The bundled governance hooks (`scripts/check-templates.mjs`, `scripts/validate-policies.mjs`) call the Harness REST API directly — they do **not** use the MCP server. They read `HARNESS_API_KEY` and `HARNESS_ACCOUNT_ID` from the shell environment.
+
+- With OAuth-only Remote MCP: the hooks **fail open** (emit `"allow"` / no-op) because they have no credentials. Plugin still works; governance is inactive.
+- To activate hooks, set `HARNESS_API_KEY` + `HARNESS_ACCOUNT_ID` in your shell. The hooks will then call the Template API + Policy Engine.
+
+### 5. Optional: run the OSS MCP server from source
+
+For MCP-server development, point `mcp.json` at a local build:
 
 ```json
 {
@@ -143,7 +160,7 @@ By default `mcp.json` runs `npx -y harness-mcp-v2 stdio`. To develop against a l
 }
 ```
 
-Build the server first: `cd mcp-server && pnpm install && pnpm build`.
+Build the server first: see [harness/mcp-server](https://github.com/harness/mcp-server).
 
 ---
 

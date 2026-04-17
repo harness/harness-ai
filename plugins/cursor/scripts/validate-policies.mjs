@@ -8,7 +8,6 @@ import {
   credentialsReady,
   harnessFetch,
   buildScopeQuery,
-  accountId,
   extractPipelineYaml,
   PIPELINE_RESOURCE_TYPES,
 } from "./harness-api.mjs";
@@ -73,7 +72,7 @@ async function main() {
 
   if (failures.length === 0 && warnings.length === 0) {
     console.log(JSON.stringify({
-      additional_context: `Harness Policy Engine: ${details.length} policy set(s) evaluated, all passed (status=${status}, account=${accountId()}, scope=${scopeLabel(orgId, projectId)}).`,
+      additional_context: `Harness Policy Engine: ${details.length} policy set(s) evaluated, all passed (status=${status}, scope=${scopeLabel(orgId, projectId)}).`,
     }));
     return;
   }

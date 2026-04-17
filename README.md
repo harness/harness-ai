@@ -16,12 +16,7 @@ harness-ai/
 │   └── cursor/          # Cursor IDE plugin (skills, rules, MCP)
 ├── extensions/
 │   └── gemini/          # Gemini CLI Extension
-├── agents/
-│   └── acp/             # ACP Agent (JetBrains, Zed)
-├── apps/
-│   └── chatgpt/         # ChatGPT App (Apps SDK)
-├── scripts/             # Build & sync utilities
-└── assets/              # Shared logos, icons
+└── scripts/             # Build & sync utilities (sync-skills, validate)
 ```
 
 ## Packages
@@ -31,15 +26,23 @@ harness-ai/
 | **VS Code Plugin** | VS Code / Copilot | `@agentPlugins harness` |
 | **Claude Plugin** | Claude Code, Cowork | `/plugin install harness` |
 | **Cursor Plugin** | Cursor IDE | Install from [Cursor marketplace](https://cursor.com/marketplace/publish) using this repo URL; layout per [Plugins reference](https://cursor.com/docs/reference/plugins) (`plugins/cursor/`) |
-| **Gemini Extension** | Gemini CLI | `gemini extensions install` |
-| **ACP Agent** | JetBrains, Zed | Settings > Agents > Harness |
+| **Gemini Extension** | Gemini CLI | `gemini extensions install https://github.com/harness/harness-ai` |
 
-## Two MCP Modes
+## MCP Modes
 
-All packages ship with both connection modes pre-configured:
+Two modes are supported for connecting to Harness:
 
-- **Remote MCP** (default): `https://mcp.harness.io/mcp` — zero install, OAuth handles auth
-- **OSS MCP** (fallback): `npx harness-mcp-v2` — runs locally, requires PAT
+- **Remote MCP**: `https://mcp.harness.io/mcp` — zero install, OAuth handles auth.
+- **OSS MCP**: `npx harness-mcp-v2` — runs locally, requires a Harness PAT.
+
+Current defaults per package:
+
+| Package | Default mode | Notes |
+|---------|--------------|-------|
+| VS Code Plugin | Remote | `.mcp.json` uses `https://mcp.harness.io/mcp` |
+| Claude Plugin | Remote | `.mcp.json` uses `https://mcp.harness.io/mcp` |
+| Gemini Extension | Remote | `gemini-extension.json` uses the remote URL |
+| Cursor Plugin | Remote | `mcp.json` uses `https://mcp.harness.io/mcp`. Users who prefer OSS+PAT can edit `plugins/cursor/mcp.json` to run `npx harness-mcp-v2 stdio` with the env vars listed in `plugins/cursor/README.md`. |
 
 ## Development
 
@@ -70,7 +73,6 @@ Each package versions **independently** — there is no monorepo-wide release ta
 | VS Code / Copilot plugin | `plugins/vscode/plugin.json` | VS Code marketplace |
 | Claude plugin | `plugins/claude/plugin.json` | Claude plugin directory |
 | Gemini CLI extension | `extensions/gemini/gemini-extension.json` | `gemini extensions install https://github.com/harness/harness-ai` |
-| Auto-installer | `installer/package.json` | npm: `npx harness-setup` |
 
 ### When to bump a version
 
@@ -90,12 +92,10 @@ Each package versions **independently** — there is no monorepo-wide release ta
    - VS Code: `vscode-vX.Y.Z`
    - Claude: `claude-vX.Y.Z`
    - Gemini: `gemini-vX.Y.Z`
-   - Installer: `installer-vX.Y.Z`
 4. Re-submit / publish:
    - **Cursor**: marketplace re-pulls from the default branch; no manual action unless metadata changed.
    - **VS Code / Claude**: re-submit if their marketplaces require it.
    - **Gemini**: users get the new version on next `gemini extensions install ...`.
-   - **Installer**: `cd installer && npm publish --access public`.
 
 ### Validating before release
 
