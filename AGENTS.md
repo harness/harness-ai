@@ -60,7 +60,7 @@ harness-ai/
 │   ├── cursor/                       # Harness Cursor plugin (marketplace-ready)
 │   │   ├── .cursor-plugin/plugin.json
 │   │   ├── mcp.json                  # Remote MCP (OAuth) default
-│   │   ├── .mcp.local.json           # OSS/PAT sample — swap over mcp.json to use
+│   │   ├── .mcp.example.json         # OSS/PAT sample — copy to .mcp.local.json and swap over mcp.json to use
 │   │   ├── hooks/hooks.json          # governance hooks (templates + OPA)
 │   │   ├── scripts/*.mjs             # hook implementations + validator
 │   │   ├── rules/*.mdc               # workspace rules shipped with the plugin
@@ -105,7 +105,7 @@ Do **not** hand-edit `plugins/*/skills/` — upstream first, then the daily sync
 ## MCP defaults
 
 - **Remote MCP** — `https://mcp.harness.io/mcp` with OAuth. Static CLIENT_ID `mcp-client` where the server requires it. Default for all four packages.
-- **OSS MCP** — `npx harness-mcp-v2 stdio` with `HARNESS_API_KEY` / `HARNESS_ACCOUNT_ID`. Each plugin ships a `*.mcp.local.json` sample — copy over the active MCP config to switch.
+- **OSS MCP** — `npx harness-mcp-v2 stdio` with `HARNESS_API_KEY` / `HARNESS_ACCOUNT_ID`. Each plugin ships a `*.mcp.example.json` sample — copy it to `*.mcp.local.json`, then swap it over the active MCP config to switch.
 
 Governance hooks (`plugins/cursor/scripts/`) call the Harness REST API directly (not via MCP) and need `HARNESS_API_KEY` + `HARNESS_ACCOUNT_ID` in the shell. Without them, hooks **fail open** — plugin still works, governance is inactive.
 

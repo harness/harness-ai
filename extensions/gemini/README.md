@@ -27,7 +27,7 @@ cd harness-ai/extensions/gemini && gemini extensions link .
 
 **Remote MCP** (default) — OAuth handles authentication. No API key configuration needed.
 
-**OSS MCP** (local) — Rename `gemini-extension.local.json` to `gemini-extension.json`. During install, Gemini CLI prompts for your API key and account ID, storing sensitive values in the system keychain.
+**OSS MCP** (local) — Copy `gemini-extension.example.json` to `gemini-extension.json`. During install, Gemini CLI prompts for your API key and account ID, storing sensitive values in the system keychain.
 
 ## License
 

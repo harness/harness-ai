@@ -4,6 +4,8 @@ node_modules/
 .env
 .env.*
 !.env.example
+# *.local.json — repo-wide convention: committed templates use *.example.json;
+#                user-populated copies (with real credentials) use *.local.json and are ignored here
 *.local.json
 
 # Cursor IDE — ignore everything except plans
