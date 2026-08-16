@@ -11,3 +11,6 @@ node_modules/
 
 # npm packaging output
 *.tgz
+*.vsix
+plugins/cursor/mcp-servers/vibe/node_modules/
+plugins/cursor/mcp-servers/vibe/dist-ui/

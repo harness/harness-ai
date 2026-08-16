@@ -5,6 +5,10 @@
       "auth": {
         "CLIENT_ID": "mcp-client"
       }
+    },
+    "harness-vibe": {
+      "command": "node",
+      "args": ["./mcp-servers/vibe/dist/index.js"]
     }
   }
 }

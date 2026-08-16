@@ -6,6 +6,11 @@
         "command": "./scripts/check-templates.mjs",
         "matcher": "MCP:harness_create",
         "timeout": 20
+      },
+      {
+        "command": "./scripts/check-vibe-write.mjs",
+        "matcher": "MCP:deploy_vibe_app|MCP:retry_vibe_deployment|MCP:cancel_vibe_deployment",
+        "timeout": 10
       }
     ],
     "afterMCPExecution": [

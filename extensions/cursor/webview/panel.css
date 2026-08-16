@@ -1,0 +1,15 @@
+@import '@harnessio/ui/styles.css';
+@import './vibe-theme.css';
+
+@tailwind utilities;
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  min-width: 240px;
+}

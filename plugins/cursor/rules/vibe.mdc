@@ -1,0 +1,24 @@
+---
+description: Use Harness Vibe MCP tools and the in-chat deployment card. Do not dump JSON or re-render the pipeline as markdown.
+alwaysApply: true
+---
+
+# Harness Vibe (vibe-api via MCP)
+
+When the user asks about a Vibe app, deployment, preview, or go-live status, use the **harness-vibe** MCP tools (backed by **vibe-api**):
+
+| Tool | When |
+|---|---|
+| `get_vibe_deployment` | Status, stages, failure, next action |
+| `get_vibe_deployment_logs` | Stage logs (pass `stageKey` from failure when known) |
+| `get_vibe_app` | App record |
+| `deploy_vibe_app` | Zip workspace and submit a new revision |
+| `retry_vibe_deployment` | Retry a failed run after a local fix |
+| `cancel_vibe_deployment` | Cancel a running run |
+| `publish_vibe_app` / `rollback_vibe_app` | Production publish / rollback |
+| `request_vibe_approval` | Request production approval |
+| `set_vibe_demo_path` | Dev/demo only — replay a named workflow recipe |
+
+The host renders an MCP App iframe on the tool-call card. **Do not** paste raw JSON or rebuild the pipeline as a markdown task list. Use the one-line `content` summary plus `failure.agentInstruction`, `failure.file`, and `failure.line` when deciding what code to change.
+
+Confirm before deploy or cancel; the plugin hook will also ask on `deploy_vibe_app` and `cancel_vibe_deployment`. Use the **vibe-status**, **vibe-deploy**, and **vibe-fix-failed-build** skills for slash commands and detailed workflows.

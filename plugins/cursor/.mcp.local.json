@@ -8,6 +8,10 @@
         "HARNESS_ACCOUNT_ID": "${HARNESS_ACCOUNT_ID}",
         "HARNESS_BASE_URL": "${HARNESS_BASE_URL}"
       }
+    },
+    "harness-vibe": {
+      "command": "node",
+      "args": ["./mcp-servers/vibe/dist/index.js"]
     }
   }
 }

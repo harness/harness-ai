@@ -1,0 +1,13 @@
+.vscode/**
+node_modules/**
+src/**
+webview/**
+tsconfig.json
+vite.config.ts
+tailwind.config.cjs
+postcss.config.cjs
+.gitignore
+**/*.map
+**/*.ts
+!out/**/*.js
+!media/**

@@ -1,0 +1,149 @@
+{
+  "name": "harness-vibe",
+  "displayName": "Harness Vibe Mode",
+  "description": "Always-on Vibe sidebar: one panel, six states for the current workspace app.",
+  "version": "0.4.0",
+  "publisher": "harness",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/harness/harness-ai.git"
+  },
+  "private": true,
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "Harness Vibe",
+      "properties": {
+        "harness.vibe.apiBaseUrl": {
+          "type": "string",
+          "default": "http://127.0.0.1:8090",
+          "description": "Base URL for local vibe-api (overridden by VIBE_API_BASE_URL)."
+        },
+        "harness.vibe.appId": {
+          "type": "string",
+          "default": "",
+          "description": "Optional app id override (overridden by VIBE_APP_ID)."
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "harness",
+          "title": "Harness",
+          "icon": "media/harness.svg"
+        }
+      ]
+    },
+    "views": {
+      "harness": [
+        {
+          "type": "webview",
+          "id": "harness.vibe",
+          "name": "Vibe Mode"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "harness.vibe.askAgent",
+        "title": "Ask Agent to Fix",
+        "category": "Harness Vibe"
+      },
+      {
+        "command": "harness.vibe.openFile",
+        "title": "Open Failure File",
+        "category": "Harness Vibe"
+      },
+      {
+        "command": "harness.vibe.retry",
+        "title": "Retry Stage",
+        "category": "Harness Vibe"
+      },
+      {
+        "command": "harness.vibe.cancel",
+        "title": "Cancel Deployment",
+        "category": "Harness Vibe"
+      },
+      {
+        "command": "harness.vibe.refresh",
+        "title": "Reset Stub",
+        "category": "Harness Vibe"
+      },
+      {
+        "command": "harness.vibe.deploy",
+        "title": "Deploy to Preview",
+        "category": "Harness Vibe"
+      },
+      {
+        "command": "harness.vibe.redeployPreview",
+        "title": "Redeploy Preview",
+        "category": "Harness Vibe"
+      },
+      {
+        "command": "harness.vibe.openPreview",
+        "title": "Open Preview",
+        "category": "Harness Vibe"
+      },
+      {
+        "command": "harness.vibe.openProd",
+        "title": "Open Production",
+        "category": "Harness Vibe"
+      },
+      {
+        "command": "harness.vibe.copyRepo",
+        "title": "Copy Repo",
+        "category": "Harness Vibe"
+      },
+      {
+        "command": "harness.vibe.openRepo",
+        "title": "Open Repo",
+        "category": "Harness Vibe"
+      },
+      {
+        "command": "harness.vibe.requestApproval",
+        "title": "Request Approval",
+        "category": "Harness Vibe"
+      },
+      {
+        "command": "harness.vibe.publish",
+        "title": "Publish",
+        "category": "Harness Vibe"
+      },
+      {
+        "command": "harness.vibe.rollback",
+        "title": "Rollback Production",
+        "category": "Harness Vibe"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p .",
+    "build:webview": "vite build",
+    "dev:webview": "vite --config vite.config.ts",
+    "watch": "tsc -p . -w",
+    "package": "npm run build:webview && npm run compile && npx --yes @vscode/vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@harnessio/ui": "1.0.10",
+    "@types/node": "^20.19.0",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@types/vscode": "^1.85.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "10.4.13",
+    "postcss": "8.4.38",
+    "postcss-import": "^16.1.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwindcss": "3.4.3",
+    "typescript": "^5.8.0",
+    "vite": "^6.3.5"
+  }
+}

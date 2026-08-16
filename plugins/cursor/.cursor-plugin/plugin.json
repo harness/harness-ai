@@ -1,8 +1,8 @@
 {
-  "name": "harness",
-  "displayName": "Harness",
-  "version": "0.1.0",
-  "description": "Harness Skills + Harness MCP server packaged as a Cursor plugin. Build, debug, deploy, and govern via Harness from Cursor.",
+  "name": "harness-vibe",
+  "displayName": "Harness Vibe (local)",
+  "version": "0.2.0",
+  "description": "Local Vibe MCP Apps mock plus Harness skills. Distinct from the marketplace Harness plugin.",
   "author": {
     "name": "Harness",
     "email": "support@harness.io"
@@ -13,6 +13,9 @@
   "logo": "assets/logo.svg",
   "mcpServers": "./mcp.json",
   "keywords": [
+    "vibe",
+    "vibe-status",
+    "harness-vibe",
     "harness",
     "ci-cd",
     "devops",
