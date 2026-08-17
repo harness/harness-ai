@@ -1,8 +1,8 @@
 {
   "name": "harness-vibe",
-  "displayName": "Harness Vibe Mode",
+  "displayName": "Harness Vibe",
   "description": "Always-on Vibe sidebar: one panel, six states for the current workspace app.",
-  "version": "0.4.0",
+  "version": "0.4.3",
   "publisher": "harness",
   "license": "Apache-2.0",
   "repository": {
@@ -36,7 +36,7 @@
       "activitybar": [
         {
           "id": "harness",
-          "title": "Harness",
+          "title": "Harness Vibe",
           "icon": "media/harness.svg"
         }
       ]
@@ -46,7 +46,7 @@
         {
           "type": "webview",
           "id": "harness.vibe",
-          "name": "Vibe Mode"
+          "name": "Harness Vibe"
         }
       ]
     },

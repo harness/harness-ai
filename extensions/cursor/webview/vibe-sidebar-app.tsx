@@ -1,6 +1,4 @@
 import { useEffect, useState } from 'react';
-import { TooltipProvider } from '@harnessio/ui/components';
-import { PortalProvider } from '@harnessio/ui/context';
 import type {
   EnvCard,
   HeroBlock,
@@ -12,6 +10,12 @@ import type {
   Telemetry,
   Tone,
 } from '../src/types';
+
+declare global {
+  interface Window {
+    __VIBE_INITIAL_STATE__?: PanelState | null;
+  }
+}
 
 interface VsCodeApi {
   postMessage: (message: PanelMessage) => void;
@@ -33,6 +37,49 @@ function getVsCodeApi(): VsCodeApi {
 
 const vscode = getVsCodeApi();
 
+export function VibeSidebarApp() {
+  const [state, setState] = useState<PanelState | null>(
+    () => window.__VIBE_INITIAL_STATE__ ?? null,
+  );
+
+  useEffect(() => {
+    const onMessage = (event: MessageEvent<{ type?: string; payload?: PanelState }>) => {
+      if (event.data?.type === 'state' && event.data.payload) {
+        setState(event.data.payload);
+      }
+    };
+    window.addEventListener('message', onMessage);
+    vscode.postMessage({ type: 'ready' });
+    return () => window.removeEventListener('message', onMessage);
+  }, []);
+
+  return (
+    <div className="vibe-root dark min-h-full">{state ? <Panel state={state} /> : <LoadingBody />}</div>
+  );
+}
+
+function LoadingBody() {
+  return (
+    <div className="p-vb-14">
+      <div className="text-vb-14 text-vb-fg font-semibold">Harness Vibe</div>
+      <div className="text-vb-12 text-vb-fg-3 mt-[6px]">Resolving this repository…</div>
+    </div>
+  );
+}
+
+export function Panel({ state }: { state: PanelState }) {
+  const hasPipeline = Boolean(state.stages?.length);
+
+  return (
+    <div className="bg-vb-panel flex min-h-full flex-col">
+      <AppHeader state={state} />
+      {hasPipeline ? <PipelineLayout state={state} /> : <SimpleLayout state={state} />}
+      <Footer left={state.footLeft} right={state.footRight} />
+      <StateStrip view={state.view} />
+    </div>
+  );
+}
+
 const VIEW_LABEL: Record<PanelView, string> = {
   fresh: 'Not managed',
   deploying: 'Deploying',
@@ -51,50 +98,25 @@ const VIEW_DOT: Record<PanelView, Tone> = {
   live: 'ok',
 };
 
-export function VibeSidebarApp() {
-  const [portalContainer, setPortalContainer] = useState<HTMLDivElement | null>(null);
-  const [state, setState] = useState<PanelState | null>(null);
-
-  useEffect(() => {
-    const onMessage = (event: MessageEvent<{ type?: string; payload?: PanelState }>) => {
-      if (event.data?.type === 'state' && event.data.payload) {
-        setState(event.data.payload);
-      }
-    };
-    window.addEventListener('message', onMessage);
-    vscode.postMessage({ type: 'ready' });
-    return () => window.removeEventListener('message', onMessage);
-  }, []);
-
+function StateStrip({ view }: { view: PanelView }) {
   return (
-    <div className="vibe-root cn-root dark min-h-full" ref={setPortalContainer}>
-      <PortalProvider portalContainer={portalContainer}>
-        <TooltipProvider>
-          {state ? <Panel state={state} /> : <LoadingBody />}
-        </TooltipProvider>
-      </PortalProvider>
-    </div>
-  );
-}
-
-function LoadingBody() {
-  return (
-    <div className="p-vb-14">
-      <div className="text-vb-14 text-vb-fg font-semibold">Vibe</div>
-      <div className="text-vb-12 text-vb-fg-3 mt-[6px]">Resolving this repository…</div>
-    </div>
-  );
-}
-
-export function Panel({ state }: { state: PanelState }) {
-  const hasPipeline = Boolean(state.stages?.length);
-
-  return (
-    <div className="bg-vb-panel flex min-h-full flex-col">
-      <AppHeader state={state} />
-      {hasPipeline ? <PipelineLayout state={state} /> : <SimpleLayout state={state} />}
-      <Footer left={state.footLeft} right={state.footRight} />
-      <StateStrip view={state.view} />
+    <div className="border-vb-rule bg-vb-panel flex flex-wrap gap-[6px] border-t px-vb-8 py-vb-8">
+      {(Object.keys(VIEW_LABEL) as PanelView[]).map((stateView) => {
+        const active = stateView === view;
+        return (
+          <button
+            key={stateView}
+            type="button"
+            className={`text-[11px] rounded-[6px] border px-[8px] py-[4px] font-medium ${
+              active ? 'border-[#3A4150] bg-[#232730] text-vb-fg' : 'border-vb-rule bg-vb-topbar text-vb-fg-4'
+            } flex cursor-pointer items-center gap-[6px] font-sans`}
+            onClick={() => send({ type: 'setView', view: stateView })}
+          >
+            <span className={`size-[6px] rounded-full ${dotBg(VIEW_DOT[stateView])}`} />
+            <span>{VIEW_LABEL[stateView]}</span>
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -117,33 +139,10 @@ function SimpleLayout({ state }: { state: PanelState }) {
   );
 }
 
-function StateStrip({ view }: { view: PanelView }) {
-  return (
-    <div className="border-vb-rule bg-vb-panel flex flex-wrap gap-[6px] border-t px-vb-13 py-vb-8">
-      {(Object.keys(VIEW_LABEL) as PanelView[]).map((stateView) => {
-        const active = stateView === view;
-        return (
-          <button
-            key={stateView}
-            type="button"
-            className={`text-[11px] rounded-[6px] border px-[8px] py-[4px] font-medium ${
-              active ? 'border-[#3A4150] bg-[#232730] text-vb-fg' : 'border-vb-rule bg-vb-topbar text-vb-fg-4'
-            } flex cursor-pointer items-center gap-[6px] font-sans`}
-            onClick={() => send({ type: 'setView', view: stateView })}
-          >
-            <span className={`size-[6px] rounded-full ${dotBg(VIEW_DOT[stateView])}`} />
-            <span>{VIEW_LABEL[stateView]}</span>
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
 function AppHeader({ state }: { state: PanelState }) {
   const tone = headerTone(state);
   return (
-    <div className="border-vb-rule border-b px-vb-14 pt-vb-14 pb-vb-13">
+    <div className="border-vb-rule border-b px-vb-8 pt-vb-14 pb-vb-13">
       <div className="flex min-w-0 flex-wrap items-center gap-vb-7">
         <span
           className={`size-[7px] shrink-0 rounded-full ${dotBg(tone)} ${tone === 'info' ? 'vb-pulse' : ''}`}

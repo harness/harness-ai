@@ -1,33 +1,33 @@
 import type { EnvCard, PanelState, PanelView, StageItem, Telemetry } from './types';
 
-const APP = 'invoice-reconciler';
-const REPO = 'acme/invoice-reconciler';
-const PROJECT_ID = 'prj_8f21c4';
-const PREVIEW_URL = 'https://invoice-reconciler--preview.apps.harness.io';
-const PROD_URL = 'https://invoices.acme.com';
-const CONSOLE_URL = 'https://app.harness.io/#/vibe/apps/prj_8f21c4';
+const APP = 'vegan-food-delivery';
+const REPO = 'acme/vegan-food-delivery';
+const PROJECT_ID = 'prj_vegan_04';
+const PREVIEW_URL = 'https://vegan-food-delivery--preview.apps.harness.io';
+const PROD_URL = 'https://vegan.vibe.acme.com';
+const CONSOLE_URL = 'https://app.harness.io/#/vibe/apps/prj_vegan_04';
 
-const AGENT_PROMPT = `Fix this Harness Vibe build failure (stubbed status from the sidebar).
+const AGENT_PROMPT = `Fix this Harness Vibe build failure for vegan-food-delivery.
 
-Application: invoice-reconciler
-Failure: 2 type errors in src/App.tsx
+Application: vegan-food-delivery
+Failure: 2 type errors in frontend/src/components/MenuSection.tsx
 Production is untouched and still serving v0.4.1.
 
-src/App.tsx:18:44 — error TS2345
-  Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+frontend/src/components/MenuSection.tsx:48:31 — error TS2339
+  Property 'length' does not exist on type 'string[] | undefined'.
 
-src/App.tsx:22:24 — error TS2322
-  Type 'string[] | undefined' is not assignable to type 'string[]'.
+frontend/src/components/MenuSection.tsx:59:47 — error TS2345
+  Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
 
 Found 2 errors. exit 1
 
-Likely cause: commit a91c40e refactor: totals via reduce
-  src/App.tsx        +9 −4
-  src/api/ledger.ts  +2 −0
-The reduce refactor made totals values number | undefined, and formatDelta takes number.
+Likely cause: commit 7c2e91a feat: menu from /api/menu
+  frontend/src/components/MenuSection.tsx  +18 −6
+  frontend/src/api.ts                      +4 −0
+The menu payload types priceCents and tags as optional, but formatPrice takes number and tags is used as string[].
 
 Please:
-1. Inspect src/App.tsx around lines 18 and 22.
+1. Inspect frontend/src/components/MenuSection.tsx around lines 48 and 59.
 2. Make the smallest appropriate fix.
 3. Package / typecheck.
 4. Come back to the Harness Vibe sidebar and use Retry build.
@@ -68,7 +68,10 @@ function stages(
   });
 }
 
-function snapshot(view: PanelView, attempt: number): Omit<PanelState, 'stubbed' | 'attempt' | 'maxAttempts' | 'agentPrompt'> {
+function snapshot(
+  view: PanelView,
+  attempt: number,
+): Omit<PanelState, 'stubbed' | 'attempt' | 'maxAttempts' | 'agentPrompt'> {
   const base = {
     appName: APP,
     repo: REPO,
@@ -94,13 +97,13 @@ function snapshot(view: PanelView, attempt: number): Omit<PanelState, 'stubbed' 
       hero: {
         tone: 'vibe',
         eyebrow: '',
-        title: 'Deploy this repo with Vibe',
+        title: 'Deploy vegan-food-delivery with Vibe',
         body: 'Harness has no project for this repository. The first deploy creates one and applies the Vibe template your team is on.',
         progress: false,
         rows: [
-          { k: 'template', v: 'vibe-payments-v4 (Payments)' },
-          { k: 'you get', v: 'preview url · 7d ttl · $40 cap' },
-          { k: 'enforces', v: '4 policies · 2 approval gates' },
+          { k: 'workspace', v: APP },
+          { k: 'stack', v: 'React · Spring Boot · Postgres' },
+          { k: 'you get', v: 'preview url · managed deploy' },
         ],
         actions: [
           { id: 'deploy', label: 'Deploy to preview', primary: true },
@@ -114,7 +117,7 @@ function snapshot(view: PanelView, attempt: number): Omit<PanelState, 'stubbed' 
       stageMeta: '',
       telemetry: null,
       footLeft: 'harness-vibe MCP · connected',
-      footRight: 'signed in as p.rao',
+      footRight: 'not managed',
     };
   }
 
@@ -126,19 +129,20 @@ function snapshot(view: PanelView, attempt: number): Omit<PanelState, 'stubbed' 
       projectId: PROJECT_ID,
       previewUrl: null,
       productionUrl: null,
+      executionId: 'vibe-run-vegan-04',
       envs: [
         env('preview', 'deploying', 'stage 1 of 4', 'info', false),
         env('production', 'not deployed', '—', 'idle', false),
       ],
       hero: {
         tone: 'info',
-        eyebrow: 'Deploying · 2m 41s',
-        title: 'Building your application',
-        body: 'Runs on Harness, not on your machine. Close Cursor and it keeps going.',
+        eyebrow: 'Deploying · 1m 18s',
+        title: 'Building vegan-food-delivery',
+        body: 'Compiling the Vite frontend and Spring Boot API. Runs on Harness, not on your machine.',
         progress: true,
         rows: [
-          { k: 'run', v: 'vibe-run-8f21c4' },
-          { k: 'commit', v: 'a91c40e · main' },
+          { k: 'run', v: 'vibe-run-vegan-04' },
+          { k: 'commit', v: '7c2e91a · main' },
         ],
         actions: [
           { id: 'streamLogs', label: 'Stream logs', primary: false },
@@ -149,7 +153,7 @@ function snapshot(view: PanelView, attempt: number): Omit<PanelState, 'stubbed' 
       errorBlocks: null,
       stages: stages(
         [
-          ['active', '1:24'],
+          ['active', '1:18'],
           ['pending', ''],
           ['pending', ''],
           ['pending', ''],
@@ -159,8 +163,8 @@ function snapshot(view: PanelView, attempt: number): Omit<PanelState, 'stubbed' 
       stageLabel: 'Stages',
       stageMeta: '1 of 4',
       telemetry: null,
-      footLeft: 'watching run vibe-run-8f21c4',
-      footRight: 'vibe-payments-v4',
+      footLeft: 'watching run vibe-run-vegan-04',
+      footRight: 'vibe-delivery-v3',
     };
   }
 
@@ -172,8 +176,9 @@ function snapshot(view: PanelView, attempt: number): Omit<PanelState, 'stubbed' 
       projectId: PROJECT_ID,
       previewUrl: null,
       productionUrl: PROD_URL,
-      failureFile: 'src/App.tsx',
-      failureLine: 18,
+      failureFile: 'frontend/src/components/MenuSection.tsx',
+      failureLine: 59,
+      executionId: 'vibe-run-vegan-04',
       envs: [
         env('preview', 'build failed', 'nothing deployed', 'err', false),
         env('production', 'live', 'v0.4.1 · healthy', 'ok', true),
@@ -181,15 +186,15 @@ function snapshot(view: PanelView, attempt: number): Omit<PanelState, 'stubbed' 
       hero: {
         tone: 'err',
         eyebrow: 'Build failed · stage 1 of 4',
-        title: '2 type errors in src/App.tsx',
-        body: 'Nothing was deployed and no infrastructure was created. Production is untouched and still serving v0.4.1.',
+        title: '2 type errors in MenuSection.tsx',
+        body: 'Nothing was deployed and no infrastructure was created. Production is untouched and still serving v0.4.1 at vegan.vibe.acme.com.',
         progress: false,
         rows: [],
         actions: [
           { id: 'askAgent', label: 'Fix with agent', primary: true, ai: true },
           { id: 'retry', label: 'Retry build', primary: false },
         ],
-        foot: 'Fix with agent pulls the full failure context into chat, then proposes a patch you review in the diff view.',
+        foot: 'Fix with agent writes VIBE_TASK.md and opens chat with the failure context.',
       },
       errorBlocks: null,
       stages: stages(
@@ -204,7 +209,7 @@ function snapshot(view: PanelView, attempt: number): Omit<PanelState, 'stubbed' 
       stageLabel: 'Stages',
       stageMeta: 'halted at 1',
       telemetry: null,
-      footLeft: '2 diagnostics written to Problems',
+      footLeft: 'failure in frontend/src/components/MenuSection.tsx',
       footRight: `attempt ${attempt} of 3`,
     };
   }
@@ -217,6 +222,7 @@ function snapshot(view: PanelView, attempt: number): Omit<PanelState, 'stubbed' 
       projectId: PROJECT_ID,
       previewUrl: PREVIEW_URL,
       productionUrl: PROD_URL,
+      executionId: 'vibe-run-vegan-04',
       envs: [
         env('preview', 'live', '6d left · $1.42', 'ok', true),
         env('production', 'awaiting approval', 'held 4m', 'warn', false),
@@ -225,18 +231,18 @@ function snapshot(view: PanelView, attempt: number): Omit<PanelState, 'stubbed' 
         tone: 'warn',
         eyebrow: 'Held · release checks',
         title: 'Waiting on Platform team',
-        body: 'All four policy checks passed. One human gate remains before production, and it is not yours to grant.',
+        body: 'Preview for vegan-food-delivery is live. Policy checks passed. One human gate remains before production.',
         progress: false,
         rows: [
           { k: 'approvers', v: 'Platform team · 3 members' },
-          { k: 'required by', v: 'template vibe-payments-v4' },
+          { k: 'preview', v: 'vegan-food-delivery--preview' },
           { k: 'expires', v: 'in 20h if undecided' },
         ],
         actions: [
           { id: 'openConsole', label: 'Open in console', primary: true },
           { id: 'nudgeApprovers', label: 'Nudge approvers', primary: false },
         ],
-        foot: 'Keep working. The panel resumes the run the moment it is decided, whether or not this window is open.',
+        foot: 'The panel resumes when approval is decided, whether or not this window is open.',
       },
       errorBlocks: null,
       stages: stages(
@@ -265,6 +271,7 @@ function snapshot(view: PanelView, attempt: number): Omit<PanelState, 'stubbed' 
       projectId: PROJECT_ID,
       previewUrl: PREVIEW_URL,
       productionUrl: PROD_URL,
+      executionId: 'vibe-run-vegan-04',
       envs: [
         env('preview', 'live', 'v0.4.2 · healthy', 'ok', true),
         env('production', 'live', 'v0.4.1 · 2d ago', 'ok', true),
@@ -273,7 +280,7 @@ function snapshot(view: PanelView, attempt: number): Omit<PanelState, 'stubbed' 
         tone: 'ok',
         eyebrow: 'Approved 2m ago · all checks green',
         title: 'Publish v0.4.2 to production',
-        body: 'Canary at 10% for 15 minutes, then full rollout. Automatic rollback if error rate or latency breach the guardrails.',
+        body: 'Canary at 10% for 15 minutes, then full rollout to vegan.vibe.acme.com. Automatic rollback if error rate or latency breach the guardrails.',
         progress: false,
         rows: [
           { k: 'approved by', v: 'd.mehta · Platform team' },
@@ -300,26 +307,26 @@ function snapshot(view: PanelView, attempt: number): Omit<PanelState, 'stubbed' 
       stageLabel: 'Stages',
       stageMeta: 'preview green',
       telemetry: null,
-      footLeft: 'ready · vibe-run-8f21c4',
-      footRight: 'v0.4.2 · a91c40e',
+      footLeft: 'ready · vibe-run-vegan-04',
+      footRight: 'v0.4.2 · 7c2e91a',
     };
   }
 
   const telemetry: Telemetry = {
-    host: 'invoices.acme.com',
+    host: 'vegan.vibe.acme.com',
     stats: [
-      { value: '1,284', label: 'active users', tone: 'idle' },
-      { value: '92 ms', label: 'p95 latency', tone: 'idle' },
-      { value: '0.01%', label: 'error rate', tone: 'ok' },
+      { value: '12.4k', label: 'requests 24h', tone: 'idle' },
+      { value: '184 ms', label: 'p95 latency', tone: 'idle' },
+      { value: '0.7%', label: 'error rate', tone: 'warn' },
     ],
     buildTag: 'v0.4.2',
-    buildMsg: 'refactor: totals via reduce',
-    buildMeta: 'a91c40e · deployed 2h ago by you · rolled out in 14m',
+    buildMsg: 'feat: menu from /api/menu',
+    buildMeta: '7c2e91a · deployed 2h ago by you · rolled out in 14m',
     rollbackLabel: 'Roll back to v0.4.1',
     history: [
-      { msg: 'v0.4.2  refactor: totals via reduce', meta: 'deployed · 14m rollout', when: '2h', tone: 'ok' },
-      { msg: 'v0.4.1  fix: variance rounding', meta: 'deployed', when: '2d', tone: 'idle' },
-      { msg: 'v0.4.0  feat: multi-currency ledger', meta: 'rolled back after 6m', when: '4d', tone: 'warn' },
+      { msg: 'v0.4.2  feat: menu from /api/menu', meta: 'deployed · 14m rollout', when: '2h', tone: 'ok' },
+      { msg: 'v0.4.1  fix: plan price rounding', meta: 'deployed', when: '2d', tone: 'idle' },
+      { msg: 'v0.4.0  feat: weekly favorites', meta: 'rolled back after 6m', when: '4d', tone: 'warn' },
     ],
   };
 
@@ -330,6 +337,7 @@ function snapshot(view: PanelView, attempt: number): Omit<PanelState, 'stubbed' 
     projectId: PROJECT_ID,
     previewUrl: null,
     productionUrl: PROD_URL,
+    executionId: 'vibe-run-vegan-04',
     envs: [
       env('preview', 'torn down', 'on merge', 'idle', false),
       env('production', 'live', 'v0.4.2 · healthy', 'ok', true),
@@ -340,8 +348,27 @@ function snapshot(view: PanelView, attempt: number): Omit<PanelState, 'stubbed' 
     stageLabel: '',
     stageMeta: '',
     telemetry,
-    footLeft: 'production healthy · 6 days green',
-    footRight: '$18.40 / mo',
+    footLeft: 'vegan.vibe.acme.com healthy',
+    footRight: '$146 / mo',
+  };
+}
+
+export function stubPanelState(
+  view: PanelView,
+  overlay?: Pick<Partial<PanelState>, 'appId' | 'executionId' | 'projectId' | 'appName' | 'repo'>,
+): PanelState {
+  const snap = snapshot(view, 1);
+  return {
+    stubbed: true,
+    ...snap,
+    attempt: 1,
+    maxAttempts: 3,
+    agentPrompt: AGENT_PROMPT,
+    appId: overlay?.appId ?? snap.appId,
+    executionId: overlay?.executionId ?? snap.executionId,
+    projectId: overlay?.projectId ?? snap.projectId,
+    appName: overlay?.appName ?? snap.appName,
+    repo: overlay?.repo ?? snap.repo,
   };
 }
 

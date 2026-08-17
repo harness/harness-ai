@@ -6,6 +6,9 @@ import type {
   VibeDeployment,
 } from './api-types';
 
+const JSON_TIMEOUT_MS = 5000;
+const UPLOAD_TIMEOUT_MS = 120_000;
+
 export class VibeApiError extends Error {
   constructor(
     readonly status: number,
@@ -134,15 +137,28 @@ export class VibeApi {
     }
 
     let res: Response;
+    const timeoutMs = body instanceof FormData ? UPLOAD_TIMEOUT_MS : JSON_TIMEOUT_MS;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
     try {
-      res = await this.fetchImpl(`${this.baseUrl}${path}`, { method, headers, body: payload });
+      res = await this.fetchImpl(`${this.baseUrl}${path}`, {
+        method,
+        headers,
+        body: payload,
+        signal: controller.signal,
+      });
     } catch (error) {
+      const aborted = (error as Error).name === 'AbortError';
       throw new VibeApiError(
         0,
         method,
         path,
-        `vibe-api ${method} ${path} unreachable: ${(error as Error).message}`,
+        aborted
+          ? `vibe-api ${method} ${path} timed out after ${timeoutMs}ms`
+          : `vibe-api ${method} ${path} unreachable: ${(error as Error).message}`,
       );
+    } finally {
+      clearTimeout(timer);
     }
 
     if (!res.ok) {

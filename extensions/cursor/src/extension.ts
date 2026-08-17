@@ -8,6 +8,7 @@ import {
 } from './map-deployment';
 import { VibeViewProvider } from './panel';
 import { matchAppToWorkspace } from './resolve-app';
+import { stubPanelState } from './stub';
 import type { App } from './api-types';
 import type { PanelMessage, PanelState, PanelView } from './types';
 import { PANEL_VIEWS, VIEW_TO_DEMO_PATH } from './types';
@@ -26,6 +27,7 @@ let extensionContext: vscode.ExtensionContext | undefined;
 let panelState: PanelState = mapFresh(null);
 let pollTimer: ReturnType<typeof setInterval> | undefined;
 let refreshInFlight: Promise<void> | undefined;
+let demoView: PanelView | null = null;
 
 export function activate(context: vscode.ExtensionContext): void {
   extensionContext = context;
@@ -33,6 +35,7 @@ export function activate(context: vscode.ExtensionContext): void {
   provider = new VibeViewProvider(context.extensionUri, handlePanelMessage);
   diagnostics = vscode.languages.createDiagnosticCollection('harness-vibe');
   logs = vscode.window.createOutputChannel('Harness Vibe');
+  publish(mapFresh(workspacePath()));
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(VibeViewProvider.viewId, provider, {
       webviewOptions: { retainContextWhenHidden: true },
@@ -47,7 +50,10 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(statusBar);
 
   const commands: Array<[string, () => void]> = [
-    ['harness.vibe.refresh', () => void refresh()],
+    ['harness.vibe.refresh', () => {
+      demoView = null;
+      void refresh();
+    }],
     ['harness.vibe.openFile', () => void openFailureFile()],
     ['harness.vibe.retry', () => void applyRetry()],
     ['harness.vibe.cancel', () => void applyCancel()],
@@ -64,6 +70,7 @@ export function activate(context: vscode.ExtensionContext): void {
     context.subscriptions.push(vscode.commands.registerCommand(id, fn));
   }
 
+  publish(mapFresh(workspacePath()));
   void refresh();
 }
 
@@ -100,8 +107,13 @@ function workspacePath(): string | null {
 }
 
 function handlePanelMessage(message: PanelMessage): void {
-  if (message.type === 'ready') void refresh();
-  else if (message.type === 'refresh') void refresh();
+  if (message.type === 'ready') {
+    provider?.setState(panelState);
+    if (!demoView) void refresh();
+  } else if (message.type === 'refresh') {
+    demoView = null;
+    void refresh();
+  }
   else if (message.type === 'setView' && message.view && PANEL_VIEWS.includes(message.view)) {
     void applySetView(message.view);
   } else if (message.type === 'deploy') void applyDeploy();
@@ -137,6 +149,7 @@ async function refreshInternal(): Promise<void> {
   api = createApi();
   try {
     const resolved = await resolveApp();
+    if (demoView) return;
     if (!resolved) {
       stopPolling();
       publish(mapFresh(workspacePath()));
@@ -144,10 +157,12 @@ async function refreshInternal(): Promise<void> {
     }
 
     const deployment = await api.getVibeDeployment(resolved.app.id, resolved.app.latestExecutionId ?? undefined);
+    if (demoView) return;
     const next = mapDeploymentToPanelState(resolved.app, deployment, workspacePath());
     publish(next);
     maybeStartPolling(next);
   } catch (error) {
+    if (demoView) return;
     stopPolling();
     if (error instanceof VibeApiError && error.status === 0) {
       publish(mapDisconnected(api.origin));
@@ -197,30 +212,26 @@ async function clearPersistedAppId(): Promise<void> {
 }
 
 async function applySetView(view: PanelView): Promise<void> {
-  const demoPath = VIEW_TO_DEMO_PATH[view];
+  stopPolling();
   if (view === 'fresh') {
+    demoView = null;
     await clearPersistedAppId();
     publish(mapFresh(workspacePath()));
     return;
   }
 
-  const appId = panelState.appId ?? (await resolveApp())?.app.id;
-  if (!appId) {
-    await applyDeploy(demoPath ?? 'success');
-    return;
-  }
+  demoView = view;
+  publish(
+    stubPanelState(view, {
+      appId: panelState.appId,
+      executionId: panelState.executionId,
+    }),
+  );
 
-  if (!demoPath || !api) return;
-  try {
-    const deployment = await api.replayDemoState(appId, demoPath);
-    const app = await api.getApp(appId);
-    await persistAppId(appId);
-    const next = mapDeploymentToPanelState(app, deployment, workspacePath());
-    publish(next);
-    maybeStartPolling(next);
-  } catch (error) {
-    handleActionError(error);
-  }
+  const demoPath = VIEW_TO_DEMO_PATH[view];
+  const appId = panelState.appId;
+  if (!demoPath || !api || !appId) return;
+  void api.replayDemoState(appId, demoPath).catch(() => undefined);
 }
 
 async function applyDeploy(pathOverride?: string): Promise<void> {
@@ -251,6 +262,7 @@ async function applyDeploy(pathOverride?: string): Promise<void> {
       submission.executionId ?? app.latestExecutionId ?? undefined,
     );
     const next = mapDeploymentToPanelState(app, deployment, folder);
+    demoView = null;
     publish(next);
     maybeStartPolling(next);
   } catch (error) {

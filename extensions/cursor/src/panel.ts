@@ -36,18 +36,20 @@ export class VibeViewProvider implements vscode.WebviewViewProvider {
   }
 
   private renderHtml(webview: vscode.Webview): string {
+    const nonce = getNonce();
     const scriptUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this.extensionUri, 'media', 'webview', 'panel.js'),
     );
     const styleUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this.extensionUri, 'media', 'webview', 'panel.css'),
     );
+    const initialState = JSON.stringify(this.state ?? null).replace(/</g, '\\u003c');
     const csp = [
       `default-src 'none'`,
       `img-src ${webview.cspSource} data:`,
       `font-src ${webview.cspSource} data:`,
       `style-src ${webview.cspSource} 'unsafe-inline'`,
-      `script-src ${webview.cspSource}`,
+      `script-src ${webview.cspSource} 'nonce-${nonce}'`,
     ].join('; ');
 
     return `<!DOCTYPE html>
@@ -57,11 +59,22 @@ export class VibeViewProvider implements vscode.WebviewViewProvider {
   <meta http-equiv="Content-Security-Policy" content="${csp}" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="${styleUri}">
+  <style>html,body,#root{margin:0;padding:0;height:100%;background:#161719;}</style>
 </head>
 <body>
   <div id="root"></div>
-  <script src="${scriptUri}"></script>
+  <script nonce="${nonce}">window.__VIBE_INITIAL_STATE__=${initialState};</script>
+  <script nonce="${nonce}" src="${scriptUri}"></script>
 </body>
 </html>`;
   }
+}
+
+function getNonce(): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let nonce = '';
+  for (let i = 0; i < 32; i += 1) {
+    nonce += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return nonce;
 }

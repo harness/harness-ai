@@ -1,4 +1,3 @@
-@import '@harnessio/ui/styles.css';
 @import './vibe-theme.css';
 
 @tailwind utilities;
@@ -7,7 +6,9 @@ html,
 body,
 #root {
   margin: 0;
+  padding: 0 !important;
   height: 100%;
+  background: #161719;
 }
 
 body {

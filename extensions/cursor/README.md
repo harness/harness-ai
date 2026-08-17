@@ -1,6 +1,6 @@
-# Harness Vibe Mode — Cursor extension
+# Harness Vibe — Cursor extension
 
-Always-on **Harness** activity-bar sidebar for the current workspace. Header stays constant (app, managed, preview/prod). Pipeline states show stages on the left and an action card on the right.
+Always-on **Harness Vibe** activity-bar sidebar for the current workspace. Header stays constant (app, managed, preview/prod). Pipeline states show stages on the left and an action card on the right.
 
 This is a VSIX, not a Cursor Marketplace plugin. Do not nest it under `plugins/cursor/`.
 
@@ -12,12 +12,12 @@ The extension is a thin client of local **vibe-api** (`VIBE_API_BASE_URL`, defau
 cd extensions/cursor
 npm install
 npm run package
-cursor --install-extension ./harness-vibe-0.4.0.vsix --force
+cursor --install-extension ./harness-vibe-0.4.3.vsix --force
 ```
 
 Or from the vibe-mode repo: `./vibe-stack install-extensions update vibe`.
 
-Reload Cursor. Open the **Harness** icon in the left activity bar → **Vibe Mode**. Start vibe-api (`./vibe-stack up`). If the API is down, the panel shows disconnected.
+Reload Cursor. Open the **Harness Vibe** icon in the left activity bar. Start vibe-api (`./vibe-stack up`). If the API is down, the panel shows disconnected.
 
 Settings: `harness.vibe.apiBaseUrl`, `harness.vibe.appId` (optional override).
 
