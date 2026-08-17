@@ -1,5 +1,7 @@
-import { StrictMode, useMemo } from 'react';
+import { StrictMode, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import { TooltipProvider } from '@harnessio/ui/components';
+import { PortalProvider } from '@harnessio/ui/context';
 import './vscode-stub';
 import './panel.css';
 import { STUB_VIEWS, StubStore } from '../src/stub';
@@ -23,6 +25,8 @@ function ViewLabel({ view }: { view: PanelView }) {
 }
 
 function PanelPreview({ width, state }: { width: number; state: PanelState }) {
+  const [portalContainer, setPortalContainer] = useState<HTMLDivElement | null>(null);
+
   return (
     <div
       style={{
@@ -44,8 +48,12 @@ function PanelPreview({ width, state }: { width: number; state: PanelState }) {
       >
         {width}px
       </div>
-      <div className="vibe-root dark min-h-full">
-        <Panel state={state} />
+      <div className="vibe-root cn-root dark min-h-full" ref={setPortalContainer}>
+        <PortalProvider portalContainer={portalContainer}>
+          <TooltipProvider>
+            <Panel state={state} />
+          </TooltipProvider>
+        </PortalProvider>
       </div>
     </div>
   );

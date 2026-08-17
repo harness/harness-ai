@@ -2,7 +2,7 @@
   "name": "harness-vibe",
   "displayName": "Harness Vibe",
   "description": "Always-on Vibe sidebar: one panel, six states for the current workspace app.",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "publisher": "harness",
   "license": "Apache-2.0",
   "repository": {

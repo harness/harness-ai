@@ -12,7 +12,7 @@ The extension is a thin client of local **vibe-api** (`VIBE_API_BASE_URL`, defau
 cd extensions/cursor
 npm install
 npm run package
-cursor --install-extension ./harness-vibe-0.4.3.vsix --force
+cursor --install-extension ./harness-vibe-0.4.4.vsix --force
 ```
 
 Or from the vibe-mode repo: `./vibe-stack install-extensions update vibe`.

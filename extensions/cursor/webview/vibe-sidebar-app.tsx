@@ -1,6 +1,26 @@
 import { useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
+import {
+  Button,
+  ButtonLayout,
+  Card,
+  IconV2,
+  Layout,
+  Progress,
+  StackedList,
+  StatsPanel,
+  StatusBadge,
+  Text,
+  TooltipProvider,
+  type IconV2NamesType,
+  type StatusBadgeTheme,
+  type TextProps,
+} from '@harnessio/ui/components';
+import { PortalProvider } from '@harnessio/ui/context';
+import { cn } from '@harnessio/ui/utils';
 import type {
   EnvCard,
+  HeroAction,
   HeroBlock,
   PanelMessage,
   PanelState,
@@ -38,6 +58,7 @@ function getVsCodeApi(): VsCodeApi {
 const vscode = getVsCodeApi();
 
 export function VibeSidebarApp() {
+  const [portalContainer, setPortalContainer] = useState<HTMLDivElement | null>(null);
   const [state, setState] = useState<PanelState | null>(
     () => window.__VIBE_INITIAL_STATE__ ?? null,
   );
@@ -54,16 +75,26 @@ export function VibeSidebarApp() {
   }, []);
 
   return (
-    <div className="vibe-root dark min-h-full">{state ? <Panel state={state} /> : <LoadingBody />}</div>
+    <div className="vibe-root cn-root dark min-h-full" ref={setPortalContainer}>
+      <PortalProvider portalContainer={portalContainer}>
+        <TooltipProvider>
+          {state ? <Panel state={state} /> : <LoadingBody />}
+        </TooltipProvider>
+      </PortalProvider>
+    </div>
   );
 }
 
 function LoadingBody() {
   return (
-    <div className="p-vb-14">
-      <div className="text-vb-14 text-vb-fg font-semibold">Harness Vibe</div>
-      <div className="text-vb-12 text-vb-fg-3 mt-[6px]">Resolving this repository…</div>
-    </div>
+    <Layout.Vertical gap="xs" className="p-cn-md">
+      <Text variant="body-strong" color="foreground-1">
+        Harness Vibe
+      </Text>
+      <Text variant="caption-normal" color="foreground-3">
+        Resolving this repository…
+      </Text>
+    </Layout.Vertical>
   );
 }
 
@@ -71,12 +102,12 @@ export function Panel({ state }: { state: PanelState }) {
   const hasPipeline = Boolean(state.stages?.length);
 
   return (
-    <div className="bg-vb-panel flex min-h-full flex-col">
+    <Layout.Flex direction="column" className="min-h-full bg-cn-1">
       <AppHeader state={state} />
       {hasPipeline ? <PipelineLayout state={state} /> : <SimpleLayout state={state} />}
       <Footer left={state.footLeft} right={state.footRight} />
       <StateStrip view={state.view} />
-    </div>
+    </Layout.Flex>
   );
 }
 
@@ -100,33 +131,34 @@ const VIEW_DOT: Record<PanelView, Tone> = {
 
 function StateStrip({ view }: { view: PanelView }) {
   return (
-    <div className="border-vb-rule bg-vb-panel flex flex-wrap gap-[6px] border-t px-vb-8 py-vb-8">
+    <Layout.Horizontal wrap="wrap" gap="2xs" className="border-t border-cn-2 bg-cn-1 px-cn-xs py-cn-xs">
       {(Object.keys(VIEW_LABEL) as PanelView[]).map((stateView) => {
         const active = stateView === view;
         return (
-          <button
+          <Button
             key={stateView}
             type="button"
-            className={`text-[11px] rounded-[6px] border px-[8px] py-[4px] font-medium ${
-              active ? 'border-[#3A4150] bg-[#232730] text-vb-fg' : 'border-vb-rule bg-vb-topbar text-vb-fg-4'
-            } flex cursor-pointer items-center gap-[6px] font-sans`}
+            size="xs"
+            variant={active ? 'secondary' : 'outline'}
             onClick={() => send({ type: 'setView', view: stateView })}
           >
-            <span className={`size-[6px] rounded-full ${dotBg(VIEW_DOT[stateView])}`} />
-            <span>{VIEW_LABEL[stateView]}</span>
-          </button>
+            <StatusBadge variant="status" theme={statusTheme(VIEW_DOT[stateView])} size="sm" />
+            {VIEW_LABEL[stateView]}
+          </Button>
         );
       })}
-    </div>
+    </Layout.Horizontal>
   );
 }
 
 function PipelineLayout({ state }: { state: PanelState }) {
   return (
-    <div className="border-vb-rule flex min-w-0 flex-1 flex-col border-b max-[320px]:flex-col min-[321px]:flex-row">
+    <Layout.Flex
+      className="min-w-0 flex-1 border-b border-cn-2 max-[320px]:flex-col min-[321px]:flex-row"
+    >
       <StagesRail items={state.stages!} meta={state.stageMeta} />
       {state.hero ? <Hero hero={state.hero} layout="rail" /> : null}
-    </div>
+    </Layout.Flex>
   );
 }
 
@@ -142,302 +174,369 @@ function SimpleLayout({ state }: { state: PanelState }) {
 function AppHeader({ state }: { state: PanelState }) {
   const tone = headerTone(state);
   return (
-    <div className="border-vb-rule border-b px-vb-8 pt-vb-14 pb-vb-13">
-      <div className="flex min-w-0 flex-wrap items-center gap-vb-7">
-        <span
-          className={`size-[7px] shrink-0 rounded-full ${dotBg(tone)} ${tone === 'info' ? 'vb-pulse' : ''}`}
+    <Layout.Vertical gap="sm" className="border-b border-cn-2 px-cn-xs py-cn-sm">
+      <Layout.Horizontal align="center" gap="xs" wrap="wrap">
+        <StatusBadge
+          variant="status"
+          theme={statusTheme(tone)}
+          size="sm"
+          pulse={tone === 'info'}
         />
-        <span className="text-vb-14 text-vb-fg min-w-0 truncate font-semibold">{state.appName}</span>
-        <span
-          className={`text-vb-105 rounded-vb-pill shrink-0 border px-[7px] py-[2px] font-medium ${
-            state.managed
-              ? 'border-vb-managed-ok-bd bg-vb-managed-ok-bg text-vb-ok'
-              : 'border-vb-managed-idle-bd bg-vb-managed-idle-bg text-vb-fg-4'
-          }`}
-        >
+        <Text variant="body-strong" color="foreground-1" truncate className="min-w-0">
+          {state.appName}
+        </Text>
+        <StatusBadge variant="status" theme={state.managed ? 'success' : 'muted'} size="sm">
           {state.managed ? 'managed' : 'not managed'}
-        </span>
-        <div className="text-vb-12 text-vb-fg-5 ml-auto flex items-center gap-[9px]">
-          <button
+        </StatusBadge>
+        <Layout.Horizontal align="center" gap="2xs" className="ml-auto">
+          <Button
             type="button"
-            className="cursor-pointer border-0 bg-transparent p-0 leading-none"
-            title="Copy repo"
+            iconOnly
+            size="xs"
+            variant="ghost"
+            tooltipProps={{ content: 'Copy repo' }}
             onClick={() => send({ type: 'copyRepo' })}
           >
-            ⧉
-          </button>
-          <button
+            <IconV2 name="copy" />
+          </Button>
+          <Button
             type="button"
-            className="cursor-pointer border-0 bg-transparent p-0 leading-none"
-            title="Open in console"
+            iconOnly
+            size="xs"
+            variant="ghost"
+            tooltipProps={{ content: 'Open in console' }}
             onClick={() => send({ type: 'openConsole' })}
           >
-            ↗
-          </button>
-        </div>
-      </div>
-      <div className="text-vb-10 text-vb-muted mt-[5px] font-mono">
+            <IconV2 name="arrow-up-right" />
+          </Button>
+        </Layout.Horizontal>
+      </Layout.Horizontal>
+      <Text variant="caption-code" color="foreground-3">
         {state.repo} · {state.projectId}
-      </div>
-      <div className="mt-[12px] flex gap-vb-7 max-[300px]:flex-col">
+      </Text>
+      <Layout.Flex gap="xs" className="max-[300px]:flex-col">
         {state.envs.map((card) => (
           <EnvTile key={card.name} card={card} />
         ))}
-      </div>
-    </div>
+      </Layout.Flex>
+    </Layout.Vertical>
   );
 }
 
 function EnvTile({ card }: { card: EnvCard }) {
   return (
-    <div className={`min-w-0 flex-1 rounded-vb border px-vb-8 py-[6px] ${tintClasses(card.tone)}`}>
-      <div className="flex items-center gap-[5px]">
-        <span
-          className={`size-[5px] shrink-0 rounded-full ${dotBg(card.tone)} ${card.tone === 'info' ? 'vb-pulse' : ''}`}
-        />
-        <span className="text-vb-10 text-vb-fg-4 font-semibold uppercase tracking-[0.06em]">
-          {card.name}
-        </span>
-        {card.openable ? (
-          <button
-            type="button"
-            className="text-vb-10 text-vb-muted ml-auto cursor-pointer border-0 bg-transparent p-0 leading-none"
-            title={`Open ${card.name}`}
-            onClick={() => send({ type: card.name === 'preview' ? 'openPreview' : 'openProd' })}
+    <Card.Root size="sm" interactive={false} className={cn('min-w-0 flex-1', tintClasses(card.tone))}>
+      <Card.Content>
+        <Layout.Vertical gap="3xs">
+          <Layout.Horizontal align="center" gap="3xs">
+            <StatusBadge
+              variant="status"
+              theme={statusTheme(card.tone)}
+              size="sm"
+              pulse={card.tone === 'info'}
+            />
+            <Text variant="caption-strong" color="foreground-3" className="uppercase">
+              {card.name}
+            </Text>
+            {card.openable ? (
+              <Button
+                type="button"
+                iconOnly
+                size="xs"
+                variant="ghost"
+                className="ml-auto"
+                tooltipProps={{ content: `Open ${card.name}` }}
+                onClick={() => send({ type: card.name === 'preview' ? 'openPreview' : 'openProd' })}
+              >
+                <IconV2 name="arrow-up-right" />
+              </Button>
+            ) : null}
+          </Layout.Horizontal>
+          <Text
+            variant="caption-normal"
+            color={card.tone === 'idle' ? 'foreground-3' : 'foreground-1'}
           >
-            ↗
-          </button>
-        ) : null}
-      </div>
-      <div className={`text-vb-11 mt-[5px] font-medium ${card.tone === 'idle' ? 'text-vb-fg-4' : 'text-[#DCE1E8]'}`}>
-        {card.state}
-      </div>
-      <div className="text-vb-9 text-vb-muted mt-[2px] truncate font-mono">{card.meta}</div>
-    </div>
+            {card.state}
+          </Text>
+          <Text variant="caption-code" color="foreground-3" truncate>
+            {card.meta}
+          </Text>
+        </Layout.Vertical>
+      </Card.Content>
+    </Card.Root>
   );
 }
 
 function Hero({ hero, layout = 'full' }: { hero: HeroBlock; layout?: 'full' | 'rail' }) {
-  const hasEyebrow = Boolean(hero.eyebrow);
   const shellClass =
     layout === 'rail'
-      ? 'min-w-0 flex-1 p-vb-14'
-      : 'border-vb-rule border-b p-vb-14';
+      ? 'min-w-0 flex-1 p-cn-md'
+      : 'border-b border-cn-2 p-cn-md';
 
   return (
-    <div className={`${shellClass} ${tintBg(hero.tone)}`}>
+    <Layout.Vertical gap="xs" className={cn(shellClass, tintBg(hero.tone))}>
       {hero.eyebrow ? (
-        <div className={`text-vb-10u font-semibold ${toneText(hero.tone)}`}>{hero.eyebrow}</div>
+        <Text variant="caption-strong" color={toneText(hero.tone)}>
+          {hero.eyebrow}
+        </Text>
       ) : null}
-      <div className={`text-vb-145 text-vb-fg font-semibold tracking-[-0.012em] leading-[1.35] ${hasEyebrow ? 'mt-[7px]' : ''}`}>
+      <Text variant="heading-small" color="foreground-1">
         {hero.title}
-      </div>
-      <p className="text-vb-12 text-vb-fg-3 mt-[6px] leading-[1.58]">{hero.body}</p>
+      </Text>
+      <Text as="p" variant="body-normal" color="foreground-2">
+        {hero.body}
+      </Text>
       {hero.progress ? (
-        <div className="bg-vb-rule relative mt-[12px] h-[3px] overflow-hidden rounded-[2px]">
-          <span className={`absolute inset-0 w-[34%] rounded-[2px] vb-bar ${dotBg(hero.tone)}`} />
-        </div>
+        <Progress
+          variant="indeterminate"
+          state="processing"
+          size="sm"
+          className="vibe-progress-compact"
+        />
       ) : null}
       {hero.rows.length ? (
-        <div className="mt-[12px] flex flex-col gap-[6px]">
+        <Layout.Vertical gap="2xs">
           {hero.rows.map((row) => (
-            <div key={row.k} className="text-vb-11 flex items-baseline gap-[9px]">
-              <span className="text-vb-fg-5 w-[84px] shrink-0">{row.k}</span>
-              <span className="text-vb-fg-2 font-mono">{row.v}</span>
-            </div>
+            <Layout.Horizontal key={row.k} align="baseline" gap="xs">
+              <Text variant="caption-normal" color="foreground-3" className="w-cn-20 shrink-0">
+                {row.k}
+              </Text>
+              <Text variant="caption-code" color="foreground-2">
+                {row.v}
+              </Text>
+            </Layout.Horizontal>
           ))}
-        </div>
+        </Layout.Vertical>
       ) : null}
-      {hero.actions.length ? (
-        <div className="mt-[14px] flex flex-wrap gap-vb-7">
-          {hero.actions.map((action) => {
-            const isPrimary = action.primary || action.ai;
-            return (
-              <button
-                key={action.id}
-                type="button"
-                className={`text-vb-12 rounded-vb cursor-pointer border px-[13px] py-[8px] font-medium ${
-                  isPrimary
-                    ? `bg-vb-primary border-vb-primary-bd text-white ${action.primary ? 'min-w-0 flex-1 basis-0' : 'shrink-0'}`
-                    : 'bg-vb-btn border-vb-btn-bd text-vb-fg-2 shrink-0'
-                }`}
-                onClick={() => send({ type: action.id })}
-              >
-                {action.label}
-              </button>
-            );
-          })}
-        </div>
-      ) : null}
+      {hero.actions.length ? <HeroActions actions={hero.actions} /> : null}
       {hero.foot ? (
-        <p className="text-vb-105 text-vb-muted mt-[9px] leading-[1.5]">
+        <Text as="p" variant="caption-normal" color="foreground-3">
           {hero.foot}
-        </p>
+        </Text>
       ) : null}
-    </div>
+    </Layout.Vertical>
+  );
+}
+
+function HeroActions({ actions }: { actions: HeroAction[] }) {
+  const primary = actions.filter((action) => action.primary);
+  const secondary = actions.filter((action) => !action.primary);
+
+  return (
+    <ButtonLayout horizontalAlign="start">
+      {primary.length ? (
+        <ButtonLayout.Primary className="min-w-0 flex-1">
+          {primary.map((action) => (
+            <Button
+              key={action.id}
+              type="button"
+              size="sm"
+              variant={action.ai ? 'ai' : 'primary'}
+              className="w-full"
+              onClick={() => send({ type: action.id })}
+            >
+              {action.label}
+            </Button>
+          ))}
+        </ButtonLayout.Primary>
+      ) : null}
+      {secondary.length ? (
+        <ButtonLayout.Secondary>
+          {secondary.map((action) => (
+            <Button
+              key={action.id}
+              type="button"
+              size="sm"
+              variant={action.ai ? 'ai' : 'outline'}
+              onClick={() => send({ type: action.id })}
+            >
+              {action.label}
+            </Button>
+          ))}
+        </ButtonLayout.Secondary>
+      ) : null}
+    </ButtonLayout>
   );
 }
 
 function StagesRail({ items, meta }: { items: StageItem[]; meta: string }) {
   return (
-    <div className="border-vb-rule shrink-0 px-vb-10 py-vb-11 max-[320px]:border-b min-[321px]:w-[38%] min-[321px]:max-w-[132px] min-[321px]:border-r min-[321px]:border-b-0">
-      {meta ? <div className="text-vb-9 text-vb-dim mb-vb-7 font-mono leading-none">{meta}</div> : null}
-      <div className="flex flex-col">
+    <Layout.Vertical
+      gap="xs"
+      className="shrink-0 border-cn-2 px-cn-xs py-cn-sm max-[320px]:border-b min-[321px]:w-[38%] min-[321px]:max-w-[132px] min-[321px]:border-r min-[321px]:border-b-0"
+    >
+      {meta ? (
+        <Text variant="caption-code" color="foreground-3">
+          {meta}
+        </Text>
+      ) : null}
+      <StackedList.Root border={false}>
         {items.map((item) => {
           const visual = stageVisual(item.status);
           return (
-            <div key={item.name} className="flex items-start gap-[7px] py-[3px]">
-              <div
-                className={`text-[8px] mt-[1px] grid size-[14px] flex-none place-items-center rounded-full border font-bold leading-none ${visual.badge}`}
-              >
-                <span className={`${visual.glyphClass} ${visual.pulse ? 'vb-pulse' : ''}`}>
-                  {visual.glyph || '\u00a0'}
-                </span>
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className={`text-vb-10 leading-[1.3] ${visual.nameClass}`}>{item.name}</div>
-                {item.meta ? (
-                  <div className={`text-vb-9 mt-[1px] font-mono leading-[1.35] ${visual.metaClass} line-clamp-2`}>
-                    {item.meta}
-                  </div>
-                ) : null}
-              </div>
-              {item.time ? (
-                <div className="text-vb-9 text-vb-dim mt-[1px] ml-auto flex-none font-mono">{item.time}</div>
-              ) : null}
-            </div>
+            <StackedList.Item
+              key={item.name}
+              paddingX="xs"
+              paddingY="3xs"
+              disableHover
+              thumbnail={stageThumbnail(item.status)}
+              actions={
+                item.time ? (
+                  <Text variant="caption-code" color="foreground-3">
+                    {item.time}
+                  </Text>
+                ) : undefined
+              }
+            >
+              <StackedList.Field
+                title={item.name}
+                description={item.meta || undefined}
+                titleColor={visual.titleColor}
+              />
+            </StackedList.Item>
           );
         })}
-      </div>
-    </div>
+      </StackedList.Root>
+    </Layout.Vertical>
   );
 }
 
 function LiveConsole({ telemetry }: { telemetry: Telemetry }) {
   return (
-    <div className="border-vb-rule border-b px-vb-14 py-vb-13">
-      <div className="mb-[11px] flex items-center">
-        <span className="text-vb-10u text-vb-muted font-semibold uppercase">Live · last 24h</span>
-        <span className="text-vb-9 text-vb-dim ml-auto font-mono">{telemetry.host}</span>
-      </div>
+    <Layout.Vertical gap="sm" className="border-b border-cn-2 p-cn-md">
+      <Layout.Horizontal align="center">
+        <Text variant="caption-strong" color="foreground-3" className="uppercase">
+          Live · last 24h
+        </Text>
+        <Text variant="caption-code" color="foreground-3" className="ml-auto">
+          {telemetry.host}
+        </Text>
+      </Layout.Horizontal>
 
-      <div className="grid grid-cols-3 gap-2 max-[280px]:grid-cols-1">
-        {telemetry.stats.map((stat) => (
-          <div key={stat.label}>
-            <div className={`text-vb-16 font-mono ${stat.tone === 'ok' ? 'text-vb-ok' : 'text-vb-fg'}`}>{stat.value}</div>
-            <div className="text-vb-10 text-vb-fg-5 mt-[3px]">{stat.label}</div>
-          </div>
-        ))}
-      </div>
+      <StatsPanel
+        gap="3xs"
+        data={telemetry.stats.map((stat) => ({
+          label: stat.label,
+          value: (
+            <Text
+              variant="body-strong"
+              color={stat.tone === 'ok' ? 'success' : 'foreground-1'}
+            >
+              {stat.value}
+            </Text>
+          ),
+        }))}
+      />
 
-      <div className="bg-vb-build-bg border-vb-build-bd rounded-vb mt-vb-14 border p-[10px]">
-        <div className="flex items-center">
-          <span className="text-vb-10u text-vb-muted font-semibold uppercase">Deployed build</span>
-          <span className="text-vb-10 text-vb-ok ml-auto font-mono">{telemetry.buildTag}</span>
-        </div>
-        <div className="text-vb-11 text-vb-fg-2 mt-[6px] leading-[1.5]">{telemetry.buildMsg}</div>
-        <div className="text-vb-10 text-vb-muted mt-[4px] font-mono">{telemetry.buildMeta}</div>
-        <div className="mt-[10px] flex gap-vb-7">
-          <button
-            type="button"
-            className="text-vb-11 bg-vb-btn border-vb-btn-bd text-vb-fg-2 rounded-vb-sm cursor-pointer border px-[11px] py-[5px] font-medium"
-            onClick={() => send({ type: 'rollback' })}
-          >
-            {telemetry.rollbackLabel}
-          </button>
-          <button
-            type="button"
-            className="text-vb-11 bg-vb-btn border-vb-btn-bd text-vb-fg-2 rounded-vb-sm cursor-pointer border px-[11px] py-[5px] font-medium"
-            onClick={() => send({ type: 'streamLogs' })}
-          >
-            Open logs ↗
-          </button>
-        </div>
-      </div>
+      <Card.Root size="sm" interactive={false} className="bg-cn-2">
+        <Card.Content>
+          <Layout.Vertical gap="xs">
+            <Layout.Horizontal align="center">
+              <Text variant="caption-strong" color="foreground-3" className="uppercase">
+                Deployed build
+              </Text>
+              <Text variant="caption-code" color="success" className="ml-auto">
+                {telemetry.buildTag}
+              </Text>
+            </Layout.Horizontal>
+            <Text variant="body-normal" color="foreground-2">
+              {telemetry.buildMsg}
+            </Text>
+            <Text variant="caption-code" color="foreground-3">
+              {telemetry.buildMeta}
+            </Text>
+            <ButtonLayout horizontalAlign="start">
+              <ButtonLayout.Secondary>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => send({ type: 'rollback' })}
+                >
+                  {telemetry.rollbackLabel}
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => send({ type: 'streamLogs' })}
+                >
+                  Open logs
+                </Button>
+              </ButtonLayout.Secondary>
+            </ButtonLayout>
+          </Layout.Vertical>
+        </Card.Content>
+      </Card.Root>
 
-      <div className="mt-[12px]">
-        <div className="text-vb-10u text-vb-muted mb-vb-8 font-semibold uppercase tracking-[0.09em]">Recent changes</div>
-        {telemetry.history.map((row) => (
-          <div key={row.msg} className="flex items-baseline gap-[9px] py-[4px]">
-            <span className={`mt-[5px] size-[5px] flex-none rounded-full ${dotBg(row.tone)}`} />
-            <div className="min-w-0 flex-1">
-              <div className="text-vb-11 text-vb-fg-2 truncate">{row.msg}</div>
-              <div className="text-vb-9 text-vb-muted mt-[1px] font-mono">{row.meta}</div>
-            </div>
-            <div className="text-vb-9 text-vb-dim mt-[1px] flex-none font-mono">{row.when}</div>
-          </div>
-        ))}
-      </div>
-    </div>
+      <Layout.Vertical gap="xs">
+        <Text variant="caption-strong" color="foreground-3" className="uppercase">
+          Recent changes
+        </Text>
+        <StackedList.Root border={false}>
+          {telemetry.history.map((row) => (
+            <StackedList.Item
+              key={row.msg}
+              paddingX="xs"
+              paddingY="3xs"
+              disableHover
+              thumbnail={
+                <StatusBadge variant="status" theme={statusTheme(row.tone)} size="sm" />
+              }
+              actions={
+                <Text variant="caption-code" color="foreground-3">
+                  {row.when}
+                </Text>
+              }
+            >
+              <StackedList.Field title={row.msg} description={row.meta} />
+            </StackedList.Item>
+          ))}
+        </StackedList.Root>
+      </Layout.Vertical>
+    </Layout.Vertical>
   );
 }
 
 function Footer({ left, right }: { left: string; right: string }) {
   return (
-    <div className="bg-vb-footer text-vb-105 text-vb-muted mt-auto flex items-center px-vb-13 py-vb-9">
-      <span className="bg-vb-ok size-[5px] shrink-0 rounded-full" />
-      <span className="ml-[7px]">{left}</span>
-      <span className="ml-auto font-mono">{right}</span>
-    </div>
+    <Layout.Horizontal align="center" gap="xs" className="mt-auto bg-cn-2 px-cn-sm py-cn-xs">
+      <StatusBadge variant="status" theme="success" size="sm" />
+      <Text variant="caption-normal" color="foreground-3">
+        {left}
+      </Text>
+      <Text variant="caption-code" color="foreground-3" className="ml-auto">
+        {right}
+      </Text>
+    </Layout.Horizontal>
   );
 }
 
-function stageVisual(status: StageStatus): {
-  glyph: string;
-  badge: string;
-  glyphClass: string;
-  nameClass: string;
-  metaClass: string;
-  pulse: boolean;
-} {
+function stageThumbnail(status: StageStatus): ReactNode {
   if (status === 'done') {
-    return {
-      glyph: '✓',
-      badge: 'bg-vb-stage-done-bg border-vb-stage-done-bd',
-      glyphClass: 'text-vb-ok',
-      nameClass: 'text-vb-fg-3 font-normal',
-      metaClass: 'text-vb-muted',
-      pulse: false,
-    };
+    const name: IconV2NamesType = 'check';
+    return <IconV2 name={name} size="xs" color="success" />;
   }
   if (status === 'active') {
-    return {
-      glyph: '●',
-      badge: 'bg-vb-stage-active-bg border-vb-stage-active-bd',
-      glyphClass: 'text-vb-info',
-      nameClass: 'text-vb-fg font-semibold',
-      metaClass: 'text-vb-fg-4',
-      pulse: true,
-    };
+    return <StatusBadge variant="status" theme="info" size="sm" pulse />;
   }
   if (status === 'failed') {
-    return {
-      glyph: '!',
-      badge: 'bg-vb-stage-failed-bg border-vb-stage-failed-bd',
-      glyphClass: 'text-vb-err',
-      nameClass: 'text-vb-fg font-semibold',
-      metaClass: 'text-vb-err',
-      pulse: false,
-    };
+    const name: IconV2NamesType = 'warning-triangle';
+    return <IconV2 name={name} size="xs" color="danger" />;
   }
   if (status === 'held') {
-    return {
-      glyph: '◷',
-      badge: 'bg-vb-stage-held-bg border-vb-stage-held-bd',
-      glyphClass: 'text-vb-warn',
-      nameClass: 'text-vb-fg font-semibold',
-      metaClass: 'text-vb-warn',
-      pulse: false,
-    };
+    const name: IconV2NamesType = 'clock';
+    return <IconV2 name={name} size="xs" color="warning" />;
   }
-  return {
-    glyph: '',
-    badge: 'bg-transparent border-vb-stage-pending-bd',
-    glyphClass: 'text-vb-muted',
-    nameClass: 'text-vb-muted font-normal',
-    metaClass: 'text-[#454B54]',
-    pulse: false,
-  };
+  return <StatusBadge variant="status" theme="muted" size="sm" />;
+}
+
+function stageVisual(status: StageStatus): { titleColor: TextProps['color'] } {
+  if (status === 'done') return { titleColor: 'foreground-2' };
+  if (status === 'active') return { titleColor: 'foreground-1' };
+  if (status === 'failed') return { titleColor: 'danger' };
+  if (status === 'held') return { titleColor: 'warning' };
+  return { titleColor: 'foreground-3' };
 }
 
 function headerTone(state: PanelState): Tone {
@@ -449,40 +548,38 @@ function headerTone(state: PanelState): Tone {
   return state.hero?.tone ?? 'ok';
 }
 
+function statusTheme(tone: Tone): StatusBadgeTheme {
+  if (tone === 'ok') return 'success';
+  if (tone === 'warn') return 'warning';
+  if (tone === 'err') return 'danger';
+  if (tone === 'info' || tone === 'vibe') return 'info';
+  return 'muted';
+}
+
 function tintClasses(tone: Tone): string {
-  if (tone === 'ok') return 'bg-vb-tint-ok border-vb-tint-ok-bd';
-  if (tone === 'err') return 'bg-vb-tint-err border-vb-tint-err-bd';
-  if (tone === 'warn') return 'bg-vb-tint-warn border-vb-tint-warn-bd';
-  if (tone === 'info') return 'bg-vb-tint-info border-vb-tint-info-bd';
-  if (tone === 'vibe') return 'bg-vb-tint-vibe border-vb-tint-vibe-bd';
-  return 'bg-vb-tint-idle border-vb-tint-idle-bd';
+  if (tone === 'ok') return 'bg-cn-success-secondary border-cn-success';
+  if (tone === 'err') return 'bg-cn-danger-secondary border-cn-danger';
+  if (tone === 'warn') return 'bg-cn-warning-secondary border-cn-warning';
+  if (tone === 'info') return 'bg-cn-brand-secondary border-cn-brand';
+  if (tone === 'vibe') return 'bg-cn-purple-secondary border-cn-purple-outline';
+  return 'bg-cn-2 border-cn-3';
 }
 
 function tintBg(tone: Tone): string {
-  if (tone === 'ok') return 'bg-vb-tint-ok';
-  if (tone === 'err') return 'bg-vb-tint-err';
-  if (tone === 'warn') return 'bg-vb-tint-warn';
-  if (tone === 'info') return 'bg-vb-tint-info';
-  if (tone === 'vibe') return 'bg-vb-tint-vibe';
-  return 'bg-vb-tint-idle';
+  if (tone === 'ok') return 'bg-cn-success-secondary';
+  if (tone === 'err') return 'bg-cn-danger-secondary';
+  if (tone === 'warn') return 'bg-cn-warning-secondary';
+  if (tone === 'info') return 'bg-cn-brand-secondary';
+  if (tone === 'vibe') return 'bg-cn-purple-secondary';
+  return 'bg-cn-2';
 }
 
-function toneText(tone: Tone): string {
-  if (tone === 'ok') return 'text-vb-ok';
-  if (tone === 'warn') return 'text-vb-warn';
-  if (tone === 'err') return 'text-vb-err';
-  if (tone === 'info') return 'text-vb-info';
-  if (tone === 'vibe') return 'text-vb-vibe';
-  return 'text-vb-fg-5';
-}
-
-function dotBg(tone: Tone): string {
-  if (tone === 'ok') return 'bg-vb-ok';
-  if (tone === 'warn') return 'bg-vb-warn';
-  if (tone === 'err') return 'bg-vb-err';
-  if (tone === 'info') return 'bg-vb-info';
-  if (tone === 'vibe') return 'bg-vb-vibe';
-  return 'bg-vb-idle';
+function toneText(tone: Tone): NonNullable<TextProps['color']> {
+  if (tone === 'ok') return 'success';
+  if (tone === 'warn') return 'warning';
+  if (tone === 'err') return 'danger';
+  if (tone === 'info' || tone === 'vibe') return 'brand';
+  return 'foreground-3';
 }
 
 function send(message: PanelMessage) {

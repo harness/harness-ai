@@ -38,94 +38,19 @@
   src: url('./fonts/IBMPlexMono-Medium.woff2') format('woff2');
 }
 
-@keyframes vb-pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.32;
-  }
-}
-
-@keyframes vb-bar {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(300%);
-  }
-}
-
 html,
 body,
 #root,
 .vibe-root {
   font-family: 'IBM Plex Sans', system-ui, sans-serif;
-  background: #161719;
-  color: #e8eaed;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-.vibe-root {
-  --vb-ok: #43c68a;
-  --vb-err: #f0616d;
-  --vb-warn: #e3b341;
-  --vb-info: #4d9af6;
-  --vb-vibe: #8b7cf8;
-  --vb-idle: #5f6570;
-  --vb-fg: #e8eaed;
-  --vb-fg-2: #c9cfd8;
-  --vb-fg-3: #9aa1ac;
-  --vb-fg-4: #7a818c;
-  --vb-fg-5: #6e747e;
-  --vb-muted: #5f6570;
-  --vb-dim: #4c525b;
-  --vb-panel: #161719;
-  --vb-topbar: #17181b;
-  --vb-footer: #141518;
-  --vb-code-bg: #131418;
-  --vb-rule: #23262b;
-  --vb-rule-soft: #1e2024;
-  --vb-border: #2a2d33;
-  --vb-btn: #212429;
-  --vb-btn-bd: #2f343b;
-  --vb-primary: #3b6fe0;
-  --vb-primary-bd: #4a7cea;
-  --vb-build-bg: #1b1d21;
-  --vb-build-bd: #262a30;
-  --vb-tint-ok-bg: rgba(67, 198, 138, 0.06);
-  --vb-tint-ok-bd: rgba(67, 198, 138, 0.24);
-  --vb-tint-err-bg: rgba(240, 97, 109, 0.07);
-  --vb-tint-err-bd: rgba(240, 97, 109, 0.28);
-  --vb-tint-warn-bg: rgba(227, 179, 65, 0.07);
-  --vb-tint-warn-bd: rgba(227, 179, 65, 0.26);
-  --vb-tint-info-bg: rgba(77, 154, 246, 0.07);
-  --vb-tint-info-bd: rgba(77, 154, 246, 0.26);
-  --vb-tint-vibe-bg: rgba(139, 124, 248, 0.08);
-  --vb-tint-vibe-bd: rgba(139, 124, 248, 0.3);
-  --vb-tint-idle-bg: #1a1c20;
-  --vb-tint-idle-bd: #262a30;
-  --vb-managed-ok-bg: rgba(67, 198, 138, 0.1);
-  --vb-managed-ok-bd: rgba(67, 198, 138, 0.28);
-  --vb-managed-idle-bg: #1e2024;
-  --vb-managed-idle-bd: #2a2d33;
-  --vb-stage-done-bg: rgba(67, 198, 138, 0.13);
-  --vb-stage-done-bd: rgba(67, 198, 138, 0.32);
-  --vb-stage-active-bg: rgba(77, 154, 246, 0.15);
-  --vb-stage-active-bd: rgba(77, 154, 246, 0.4);
-  --vb-stage-failed-bg: rgba(240, 97, 109, 0.15);
-  --vb-stage-failed-bd: rgba(240, 97, 109, 0.42);
-  --vb-stage-held-bg: rgba(227, 179, 65, 0.14);
-  --vb-stage-held-bd: rgba(227, 179, 65, 0.4);
-  --vb-stage-pending-bd: #2f343b;
-}
-
-.vb-pulse {
-  animation: vb-pulse 1.6s ease-in-out infinite;
-}
-
-.vb-bar {
-  animation: vb-bar 1.7s ease-in-out infinite;
+/*
+ * 1.0.10 Progress `variant="indeterminate"` types hideIcon/hidePercentage as never,
+ * so the empty header row cannot be suppressed via props. Hide it for compact heroes.
+ */
+.vibe-progress-compact .cn-progress-header {
+  display: none;
 }
