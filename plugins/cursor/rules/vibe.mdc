@@ -1,24 +1,26 @@
 ---
-description: Use Harness Vibe MCP tools and the in-chat deployment card. Do not dump JSON or re-render the pipeline as markdown.
+description: Choose one Harness Vibe skill. Do not dump JSON or re-render the pipeline as markdown. Never pass confirm:true unless the in-card form was submitted.
 alwaysApply: true
 ---
 
-# Harness Vibe (vibe-api via MCP)
+# Harness Vibe — choose one skill
 
-When the user asks about a Vibe app, deployment, preview, or go-live status, use the **harness-vibe** MCP tools (backed by **vibe-api**):
+When the user asks about Vibe, pick **exactly one** skill and follow it. Do not mix workflows in one turn.
 
-| Tool | When |
-|---|---|
-| `get_vibe_deployment` | Status, stages, failure, next action |
-| `get_vibe_deployment_logs` | Stage logs (pass `stageKey` from failure when known) |
-| `get_vibe_app` | App record |
-| `deploy_vibe_app` | Zip workspace and submit a new revision |
-| `retry_vibe_deployment` | Retry a failed run after a local fix |
-| `cancel_vibe_deployment` | Cancel a running run |
-| `publish_vibe_app` / `rollback_vibe_app` | Production publish / rollback |
-| `request_vibe_approval` | Request production approval |
-| `set_vibe_demo_path` | Dev/demo only — replay a named workflow recipe |
+| User intent | Skill | First tool |
+|---|---|---|
+| first-time / “make this repo deployable”, env/secrets, detect framework | **vibe-prepare** | none (local files). Chain **vibe-deploy** only if the user asked to deploy. |
+| deploy, go live, new revision, `/vibe-deploy`, fix failed Vibe build | **vibe-deploy** | `deploy_vibe_app` **without** `confirm` |
+| status, preview URL, stages, metrics, change subdomain/CDN | **vibe-status** | `get_vibe_deployment` (default) or `get_vibe_app` for metrics/settings |
+| rollback production, undo last publish | **vibe-rollback** | Confirm, then `rollback_vibe_app` |
 
-The host renders an MCP App iframe on the tool-call card. **Do not** paste raw JSON or rebuild the pipeline as a markdown task list. Use the one-line `content` summary plus `failure.agentInstruction`, `failure.file`, and `failure.line` when deciding what code to change.
+## Rules
 
-Confirm before deploy or cancel; the plugin hook will also ask on `deploy_vibe_app` and `cancel_vibe_deployment`. Use the **vibe-status**, **vibe-deploy**, and **vibe-fix-failed-build** skills for slash commands and detailed workflows.
+- Never dump JSON or rebuild stages as a markdown task list. The host renders `ui://vibe/app.html`.
+- Never pass `confirm: true` on `deploy_vibe_app` unless the user submitted the in-card form **or** you are redeploying after an accepted fix (see **vibe-deploy**).
+- Never publish or roll back unless the user explicitly asked.
+- After **vibe-prepare**, stop unless the user asked to deploy.
+- Confirm before cancel; the plugin hook also asks on confirmed deploy and cancel.
+- If the MCP App iframe is unavailable, use the one-line `content` summary only.
+
+Slash commands: `/vibe-prepare`, `/vibe-deploy`, `/vibe-status`, `/vibe-rollback`. `/vibe-fix-failed-build` loads the repair section of **vibe-deploy**.

@@ -98,9 +98,10 @@ When editing inside `plugins/cursor/`, the workspace rule [`plugins/cursor/rules
 |-------|------------------|--------------|
 | Harness MCP server | [harness/mcp-server](https://github.com/harness/mcp-server) | **Not here** — referenced via `npx harness-mcp-v2` or remote URL |
 | Harness skills | [harness/harness-skills](https://github.com/harness/harness-skills) | **Mirrored** into `plugins/*/skills/` by `.github/workflows/sync-skills.yml` (daily) |
+| Plugin-local Vibe skills (`vibe-*`) | This repo | **Not** in harness-skills. `scripts/sync-skills.sh` overlays them after the upstream copy so daily sync does not delete them. |
 | Plugin manifests, MCP configs, hooks, rules, validator, CI | This repo | Edit here |
 
-Do **not** hand-edit `plugins/*/skills/` — upstream first, then the daily sync PR brings it in. Any manual edit will be silently reverted on next sync.
+Do **not** hand-edit mirrored `plugins/*/skills/` — upstream first, then the daily sync PR brings it in. Exception: author `vibe-*` skills in this repo (they are preserved by the overlay).
 
 ## MCP defaults
 
@@ -121,7 +122,7 @@ Governance hooks (`plugins/cursor/scripts/`) call the Harness REST API directly 
 
 ## Skills authoring
 
-- **Location**: `plugins/<platform>/skills/<kebab-case-name>/SKILL.md` — but edit upstream in `harness/harness-skills` first.
+- **Location**: `plugins/<platform>/skills/<kebab-case-name>/SKILL.md` — edit upstream in `harness/harness-skills` first, except `vibe-*` (plugin-local; edit here).
 - **Required sections**: `## Instructions`, `## Examples`, `## Performance Notes`, `## Troubleshooting`.
 - **MCP tool surface**: only the consolidated tools exposed by [harness/mcp-server](https://github.com/harness/mcp-server) — `harness_list`, `harness_get`, `harness_create`, `harness_update`, `harness_delete`, `harness_execute`, `harness_search`, `harness_describe`, `harness_schema`, `harness_diagnose`, `harness_status`. No legacy per-resource tool names.
 - **Cross-skill references**: relative paths like `create-pipeline/references/native-steps.md`.
@@ -159,7 +160,7 @@ Full rules + tag naming: [README.md#releasing](README.md#releasing).
 - Do not invent hook event names. Only use events documented by each platform.
 - Do not commit `.env` files, real PATs, account IDs, or employee PII.
 - Do not publish the installer CLI. It is parked on the `installer-wip` branch pending remote-MCP GA.
-- Do not hand-edit `plugins/*/skills/` — let the upstream-sync PR update them.
+- Do not hand-edit mirrored `plugins/*/skills/` — let the upstream-sync PR update them. Exception: `vibe-*` skills are authored in this repo.
 
 ## References
 

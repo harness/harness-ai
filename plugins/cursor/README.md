@@ -27,38 +27,40 @@ Two MCP hooks enforce Harness governance automatically — no extra setup requir
 | Event | Matcher | Script | Behavior |
 |-------|---------|--------|----------|
 | `beforeMCPExecution` | `MCP:harness_create` | `scripts/check-templates.mjs` | Before creating a **pipeline** (`pipeline` or `pipeline_v1`), lists Pipeline/Stage/StepGroup/Step templates at account/org/project scope. If templates exist and the payload lacks a `templateRef`, prompts the user (`permission: "ask"`) with the catalog so they can reuse an approved template instead of a raw pipeline. |
-| `beforeMCPExecution` | `MCP:deploy_vibe_app`, `MCP:retry_vibe_deployment`, `MCP:cancel_vibe_deployment` | `scripts/check-vibe-write.mjs` | Mock Vibe writes: **ask** on deploy/cancel, **allow** on retry. No real app is deployed. |
+| `beforeMCPExecution` | `MCP:deploy_vibe_app`, `MCP:retry_vibe_deployment`, `MCP:cancel_vibe_deployment` | `scripts/check-vibe-write.mjs` | Vibe writes against vibe-api: **ask** on confirmed deploy (`confirm: true`) and cancel, **allow** on form-only deploy and retry. |
 | `afterMCPExecution` | `MCP:harness_create`, `MCP:harness_update` | `scripts/validate-policies.mjs` | After a pipeline write, evaluates the YAML/JSON against OPA policies and policy sets bound to the `pipeline` entity at all three scopes via the Harness Policy Engine (`/pm/api/v1/policy/evaluations/evaluate-by-type`). Attaches pass/fail details as agent context. |
 
 Both hooks accept all three body shapes `harness_create` supports — raw YAML string, `{yamlPipeline: "..."}`, and `{pipeline: {...}}` JSON — via `extractPipelineYaml()` in `scripts/harness-api.mjs`.
 
 **Fail-open by design.** If `HARNESS_API_KEY` or `HARNESS_ACCOUNT_ID` aren't set, or if the Harness API returns an error, the hooks emit `permission: "allow"` / empty context so the agent is never blocked on infra issues. All API calls are made with the same credentials you set for the MCP server — no extra config.
 
-**Scope.** Pipeline hooks fire only for resource types `pipeline` and `pipeline_v1`. The Vibe write hook is independent and only matches the mock `harness-vibe` tools above.
+**Scope.** Pipeline hooks fire only for resource types `pipeline` and `pipeline_v1`. The Vibe write hook is independent and only matches `harness-vibe` tools above.
 
 ---
 
-## Vibe (mock MCP Apps)
+## Vibe (MCP Apps)
 
-A second MCP server, `harness-vibe`, ships an in-chat **MCP App** card for Vibe deployments. Tools talk to `MockVibeStore` (in-memory GreenFork fixtures). Swap that store for an HTTP client later; tool names, HTML, hooks, and this plugin stay.
+A second MCP server, `harness-vibe`, ships an in-chat **MCP App** (`ui://vibe/app.html`) for Vibe apps and deployments. Tools call **vibe-api** over HTTP (`VIBE_API_BASE_URL`, default `http://localhost:8090`). Set `VIBE_MCP_MOCK=1` only for in-memory fixtures.
 
-| Tool | UI | Mock behavior |
+| Tool | `kind` | Notes |
 |---|---|---|
-| `get_vibe_deployment` | `ui://vibe/deployment.html` | Failed GreenFork by default |
-| `deploy_vibe_app` / `retry_vibe_deployment` / `cancel_vibe_deployment` | same card | Mutate the in-memory snapshot |
-| `set_vibe_mock_scenario` | same card | MOCK ONLY — `failed` / `running` / `succeeded` / `needs_input` / `cancelled` |
-| `get_vibe_app` / `get_vibe_deployment_logs` | text | App JSON / log lines |
+| `get_vibe_app` | `app` | Status, live metrics when published, subdomain/CDN settings |
+| `get_vibe_deployment` | `deployment` | Stages rail + hero; iframe polls while running |
+| `deploy_vibe_app` | `deploy_form` / `deployment` | Form unless `confirm: true`; then zip and submit |
+| `accept_vibe_fix` | `fix_request` | Agent patches code, then redeploys with `confirm: true` |
+| `update_vibe_app` | `app` | Patch name, slug, enable CDN |
+| `retry` / `cancel` / `publish` / `rollback` | `deployment` | Same card |
 
 **Try it**
 
 From the vibe-mode checkout (sibling `harness-ai`):
 
 ```bash
-./vibe-stack build                 # builds the mock server + symlinks this plugin
-./vibe-stack install-extensions    # VSIX + plugin
+./vibe-stack build
+./vibe-stack install-extensions
 ```
 
-Reload the Cursor window. In a **vibe-mode or harness-ai** Agent chat, run `/vibe-status` (not inside a Fix in IDE isolated workspace). You should see the failed-build iframe, not a JSON dump.
+Reload the Cursor window. In a **vibe-mode or harness-ai** Agent chat, run `/vibe-status` (not inside a Fix in IDE isolated workspace). You should see the HDS iframe, not a JSON dump.
 
 Keep the marketplace **Harness** plugin if you want platform MCP. This local plugin is listed separately as **Harness Vibe (local)**.
 
@@ -70,7 +72,7 @@ rm -rf ~/.cursor/plugins/local/harness-vibe
 rsync -a --exclude node_modules --exclude dist-ui ./../.. ~/.cursor/plugins/local/harness-vibe
 ```
 
-The mock server binary is `mcp-servers/vibe/dist/index.js` (stdio). Cursor starts it from this plugin directory.
+The server binary is `mcp-servers/vibe/dist/index.js` (stdio). Cursor starts it from this plugin directory.
 
 ---
 

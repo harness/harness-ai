@@ -13,4 +13,5 @@ node_modules/
 *.tgz
 *.vsix
 plugins/cursor/mcp-servers/vibe/node_modules/
+plugins/cursor/mcp-servers/vibe/dist/
 plugins/cursor/mcp-servers/vibe/dist-ui/

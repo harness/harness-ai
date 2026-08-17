@@ -27,6 +27,11 @@ export interface VibeApiApp {
   previewUrl?: string | null;
   productionUrl?: string | null;
   repoUrl?: string | null;
+  preferredUrl?: string | null;
+  enableCdn?: boolean | null;
+  health?: string | null;
+  openIssues?: number | null;
+  projectId?: string | null;
   latestExecutionId?: string | null;
   updatedAt: string;
 }
@@ -154,6 +159,9 @@ export class VibeApiClient {
     name?: string;
     projectId?: string;
     appId?: string;
+    slug?: string;
+    preferredUrl?: string;
+    enableCdn?: boolean;
     path?: DemoPathId;
   }): Promise<AgentSubmissionResponse> {
     const form = new FormData();
@@ -166,6 +174,9 @@ export class VibeApiClient {
     if (input.name) form.set('name', input.name);
     if (input.projectId) form.set('projectId', input.projectId);
     if (input.appId) form.set('appId', input.appId);
+    if (input.slug) form.set('slug', input.slug);
+    if (input.preferredUrl) form.set('preferredUrl', input.preferredUrl);
+    if (input.enableCdn !== undefined) form.set('enableCdn', String(input.enableCdn));
     if (input.path) form.set('path', input.path);
     return this.requestJson<AgentSubmissionResponse>('POST', '/api/agent/sources', form);
   }
@@ -196,6 +207,18 @@ export class VibeApiClient {
     return this.requestJson<VibeApiApp>(
       'POST',
       `/api/apps/${encodeURIComponent(appId)}/rollback`,
+    );
+  }
+
+  updateApp(
+    appId: string,
+    patch: { name?: string; preferredUrl?: string; enableCdn?: boolean },
+  ): Promise<VibeApiApp> {
+    return this.requestJson<VibeApiApp>(
+      'PATCH',
+      `/api/apps/${encodeURIComponent(appId)}`,
+      JSON.stringify(patch),
+      'application/json',
     );
   }
 

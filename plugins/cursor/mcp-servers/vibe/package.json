@@ -1,25 +1,37 @@
 {
   "name": "@harness/vibe-mcp-mock",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "bin": {
     "harness-vibe-mcp": "./dist/index.js"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json && vite build && cp dist-ui/ui/deployment.html dist/deployment.html",
+    "build": "tsc -p tsconfig.json && vite build && cp dist-ui/ui/vibe-app.html dist/vibe-app.html",
     "start": "node dist/index.js",
     "dev": "npx tsx src/index.ts"
   },
   "dependencies": {
-    "@modelcontextprotocol/ext-apps": "^1.0.1",
+    "@harnessio/ui": "1.0.10",
+    "@hookform/resolvers": "^5.4.0",
+    "@modelcontextprotocol/ext-apps": "^1.7.0",
     "@modelcontextprotocol/sdk": "^1.26.0",
+    "react-hook-form": "^7.55.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/node": "^20.19.43",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "tsx": "^4.21.0",
     "typescript": "^5.8.0",
+    "autoprefixer": "10.4.13",
+    "postcss": "8.4.38",
+    "postcss-import": "^16.1.1",
+    "tailwindcss": "3.4.3",
     "vite": "^6.3.5",
     "vite-plugin-singlefile": "^2.3.0"
   }
