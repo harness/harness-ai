@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import type { ReactNode } from 'react';
+import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import {
   Button,
   ButtonLayout,
@@ -12,12 +12,13 @@ import {
   StatusBadge,
   Text,
   TooltipProvider,
+  ViewOnly,
   type IconV2NamesType,
   type StatusBadgeTheme,
   type TextProps,
-} from '@harnessio/ui/components';
-import { PortalProvider } from '@harnessio/ui/context';
-import { cn } from '@harnessio/ui/utils';
+} from "@harnessio/ui/components";
+import { PortalProvider } from "@harnessio/ui/context";
+import { cn } from "@harnessio/ui/utils";
 import type {
   EnvCard,
   HeroAction,
@@ -29,7 +30,7 @@ import type {
   StageStatus,
   Telemetry,
   Tone,
-} from '../src/types';
+} from "../src/types";
 
 declare global {
   interface Window {
@@ -45,7 +46,7 @@ function getVsCodeApi(): VsCodeApi {
   const globalObject = globalThis as typeof globalThis & {
     acquireVsCodeApi?: () => VsCodeApi;
   };
-  if (typeof globalObject.acquireVsCodeApi === 'function') {
+  if (typeof globalObject.acquireVsCodeApi === "function") {
     try {
       return globalObject.acquireVsCodeApi();
     } catch {
@@ -58,20 +59,24 @@ function getVsCodeApi(): VsCodeApi {
 const vscode = getVsCodeApi();
 
 export function VibeSidebarApp() {
-  const [portalContainer, setPortalContainer] = useState<HTMLDivElement | null>(null);
+  const [portalContainer, setPortalContainer] = useState<HTMLDivElement | null>(
+    null,
+  );
   const [state, setState] = useState<PanelState | null>(
     () => window.__VIBE_INITIAL_STATE__ ?? null,
   );
 
   useEffect(() => {
-    const onMessage = (event: MessageEvent<{ type?: string; payload?: PanelState }>) => {
-      if (event.data?.type === 'state' && event.data.payload) {
+    const onMessage = (
+      event: MessageEvent<{ type?: string; payload?: PanelState }>,
+    ) => {
+      if (event.data?.type === "state" && event.data.payload) {
         setState(event.data.payload);
       }
     };
-    window.addEventListener('message', onMessage);
-    vscode.postMessage({ type: 'ready' });
-    return () => window.removeEventListener('message', onMessage);
+    window.addEventListener("message", onMessage);
+    vscode.postMessage({ type: "ready" });
+    return () => window.removeEventListener("message", onMessage);
   }, []);
 
   return (
@@ -104,7 +109,11 @@ export function Panel({ state }: { state: PanelState }) {
   return (
     <Layout.Flex direction="column" className="min-h-full bg-cn-1">
       <AppHeader state={state} />
-      {hasPipeline ? <PipelineLayout state={state} /> : <SimpleLayout state={state} />}
+      {hasPipeline ? (
+        <PipelineLayout state={state} />
+      ) : (
+        <SimpleLayout state={state} />
+      )}
       <Footer left={state.footLeft} right={state.footRight} />
       <StateStrip view={state.view} />
     </Layout.Flex>
@@ -112,26 +121,30 @@ export function Panel({ state }: { state: PanelState }) {
 }
 
 const VIEW_LABEL: Record<PanelView, string> = {
-  fresh: 'Not managed',
-  deploying: 'Deploying',
-  failed: 'Build failed',
-  approval: 'Awaiting approval',
-  publish: 'Ready to publish',
-  live: 'Live in production',
+  fresh: "Not managed",
+  deploying: "Deploying",
+  failed: "Build failed",
+  approval: "Awaiting approval",
+  publish: "Ready to publish",
+  live: "Live in production",
 };
 
 const VIEW_DOT: Record<PanelView, Tone> = {
-  fresh: 'idle',
-  deploying: 'info',
-  failed: 'err',
-  approval: 'warn',
-  publish: 'ok',
-  live: 'ok',
+  fresh: "idle",
+  deploying: "info",
+  failed: "err",
+  approval: "warn",
+  publish: "ok",
+  live: "ok",
 };
 
 function StateStrip({ view }: { view: PanelView }) {
   return (
-    <Layout.Horizontal wrap="wrap" gap="2xs" className="border-t border-cn-2 bg-cn-1 px-cn-xs py-cn-xs">
+    <Layout.Horizontal
+      wrap="wrap"
+      gap="2xs"
+      className="border-t border-cn-2 bg-cn-1 px-cn-xs py-cn-xs"
+    >
       {(Object.keys(VIEW_LABEL) as PanelView[]).map((stateView) => {
         const active = stateView === view;
         return (
@@ -139,10 +152,14 @@ function StateStrip({ view }: { view: PanelView }) {
             key={stateView}
             type="button"
             size="xs"
-            variant={active ? 'secondary' : 'outline'}
-            onClick={() => send({ type: 'setView', view: stateView })}
+            variant={active ? "secondary" : "outline"}
+            onClick={() => send({ type: "setView", view: stateView })}
           >
-            <StatusBadge variant="status" theme={statusTheme(VIEW_DOT[stateView])} size="sm" />
+            <StatusBadge
+              variant="status"
+              theme={statusTheme(VIEW_DOT[stateView])}
+              size="sm"
+            />
             {VIEW_LABEL[stateView]}
           </Button>
         );
@@ -153,9 +170,7 @@ function StateStrip({ view }: { view: PanelView }) {
 
 function PipelineLayout({ state }: { state: PanelState }) {
   return (
-    <Layout.Flex
-      className="min-w-0 flex-1 border-b border-cn-2 max-[320px]:flex-col min-[321px]:flex-row"
-    >
+    <Layout.Flex className="min-w-0 flex-1 border-b border-cn-2 max-[320px]:flex-col min-[321px]:flex-row">
       <StagesRail items={state.stages!} meta={state.stageMeta} />
       {state.hero ? <Hero hero={state.hero} layout="rail" /> : null}
     </Layout.Flex>
@@ -174,19 +189,31 @@ function SimpleLayout({ state }: { state: PanelState }) {
 function AppHeader({ state }: { state: PanelState }) {
   const tone = headerTone(state);
   return (
-    <Layout.Vertical gap="sm" className="border-b border-cn-2 px-cn-xs py-cn-sm">
+    <Layout.Vertical
+      gap="sm"
+      className="border-b border-cn-2 px-cn-xs py-cn-sm"
+    >
       <Layout.Horizontal align="center" gap="xs" wrap="wrap">
         <StatusBadge
           variant="status"
           theme={statusTheme(tone)}
           size="sm"
-          pulse={tone === 'info'}
+          pulse={tone === "info"}
         />
-        <Text variant="body-strong" color="foreground-1" truncate className="min-w-0">
+        <Text
+          variant="body-strong"
+          color="foreground-1"
+          truncate
+          className="min-w-0"
+        >
           {state.appName}
         </Text>
-        <StatusBadge variant="status" theme={state.managed ? 'success' : 'muted'} size="sm">
-          {state.managed ? 'managed' : 'not managed'}
+        <StatusBadge
+          variant="status"
+          theme={state.managed ? "success" : "muted"}
+          size="sm"
+        >
+          {state.managed ? "managed" : "not managed"}
         </StatusBadge>
         <Layout.Horizontal align="center" gap="2xs" className="ml-auto">
           <Button
@@ -194,8 +221,8 @@ function AppHeader({ state }: { state: PanelState }) {
             iconOnly
             size="xs"
             variant="ghost"
-            tooltipProps={{ content: 'Copy repo' }}
-            onClick={() => send({ type: 'copyRepo' })}
+            tooltipProps={{ content: "Copy repo" }}
+            onClick={() => send({ type: "copyRepo" })}
           >
             <IconV2 name="copy" />
           </Button>
@@ -204,8 +231,8 @@ function AppHeader({ state }: { state: PanelState }) {
             iconOnly
             size="xs"
             variant="ghost"
-            tooltipProps={{ content: 'Open in console' }}
-            onClick={() => send({ type: 'openConsole' })}
+            tooltipProps={{ content: "Open in console" }}
+            onClick={() => send({ type: "openConsole" })}
           >
             <IconV2 name="arrow-up-right" />
           </Button>
@@ -225,7 +252,11 @@ function AppHeader({ state }: { state: PanelState }) {
 
 function EnvTile({ card }: { card: EnvCard }) {
   return (
-    <Card.Root size="sm" interactive={false} className={cn('min-w-0 flex-1', tintClasses(card.tone))}>
+    <Card.Root
+      size="sm"
+      interactive={false}
+      className={cn("min-w-0 flex-1", tintClasses(card.tone))}
+    >
       <Card.Content>
         <Layout.Vertical gap="3xs">
           <Layout.Horizontal align="center" gap="3xs">
@@ -233,9 +264,13 @@ function EnvTile({ card }: { card: EnvCard }) {
               variant="status"
               theme={statusTheme(card.tone)}
               size="sm"
-              pulse={card.tone === 'info'}
+              pulse={card.tone === "info"}
             />
-            <Text variant="caption-strong" color="foreground-3" className="uppercase">
+            <Text
+              variant="caption-strong"
+              color="foreground-3"
+              className="uppercase"
+            >
               {card.name}
             </Text>
             {card.openable ? (
@@ -246,7 +281,11 @@ function EnvTile({ card }: { card: EnvCard }) {
                 variant="ghost"
                 className="ml-auto"
                 tooltipProps={{ content: `Open ${card.name}` }}
-                onClick={() => send({ type: card.name === 'preview' ? 'openPreview' : 'openProd' })}
+                onClick={() =>
+                  send({
+                    type: card.name === "preview" ? "openPreview" : "openProd",
+                  })
+                }
               >
                 <IconV2 name="arrow-up-right" />
               </Button>
@@ -254,7 +293,7 @@ function EnvTile({ card }: { card: EnvCard }) {
           </Layout.Horizontal>
           <Text
             variant="caption-normal"
-            color={card.tone === 'idle' ? 'foreground-3' : 'foreground-1'}
+            color={card.tone === "idle" ? "foreground-3" : "foreground-1"}
           >
             {card.state}
           </Text>
@@ -267,11 +306,17 @@ function EnvTile({ card }: { card: EnvCard }) {
   );
 }
 
-function Hero({ hero, layout = 'full' }: { hero: HeroBlock; layout?: 'full' | 'rail' }) {
+function Hero({
+  hero,
+  layout = "full",
+}: {
+  hero: HeroBlock;
+  layout?: "full" | "rail";
+}) {
   const shellClass =
-    layout === 'rail'
-      ? 'min-w-0 flex-1 p-cn-md'
-      : 'border-b border-cn-2 p-cn-md';
+    layout === "rail"
+      ? "min-w-0 flex-1 p-cn-md"
+      : "border-b border-cn-2 p-cn-md";
 
   return (
     <Layout.Vertical gap="xs" className={cn(shellClass, tintBg(hero.tone))}>
@@ -295,18 +340,10 @@ function Hero({ hero, layout = 'full' }: { hero: HeroBlock; layout?: 'full' | 'r
         />
       ) : null}
       {hero.rows.length ? (
-        <Layout.Vertical gap="2xs">
-          {hero.rows.map((row) => (
-            <Layout.Horizontal key={row.k} align="baseline" gap="xs">
-              <Text variant="caption-normal" color="foreground-3" className="w-cn-20 shrink-0">
-                {row.k}
-              </Text>
-              <Text variant="caption-code" color="foreground-2">
-                {row.v}
-              </Text>
-            </Layout.Horizontal>
-          ))}
-        </Layout.Vertical>
+        <ViewOnly
+          layout="singleColumn"
+          data={hero.rows.map((row) => ({ label: row.k, value: row.v }))}
+        />
       ) : null}
       {hero.actions.length ? <HeroActions actions={hero.actions} /> : null}
       {hero.foot ? (
@@ -331,7 +368,7 @@ function HeroActions({ actions }: { actions: HeroAction[] }) {
               key={action.id}
               type="button"
               size="sm"
-              variant={action.ai ? 'ai' : 'primary'}
+              variant={action.ai ? "ai" : "primary"}
               className="w-full"
               onClick={() => send({ type: action.id })}
             >
@@ -347,7 +384,7 @@ function HeroActions({ actions }: { actions: HeroAction[] }) {
               key={action.id}
               type="button"
               size="sm"
-              variant={action.ai ? 'ai' : 'outline'}
+              variant={action.ai ? "ai" : "outline"}
               onClick={() => send({ type: action.id })}
             >
               {action.label}
@@ -363,7 +400,8 @@ function StagesRail({ items, meta }: { items: StageItem[]; meta: string }) {
   return (
     <Layout.Vertical
       gap="xs"
-      className="shrink-0 border-cn-2 px-cn-xs py-cn-sm max-[320px]:border-b min-[321px]:w-[38%] min-[321px]:max-w-[132px] min-[321px]:border-r min-[321px]:border-b-0"
+      grow={false}
+      className="bg-cn-2 shrink-0 border-cn-2 px-cn-xs py-cn-sm max-[320px]:border-b min-[321px]:w-cn-56 min-[321px]:border-r min-[321px]:border-b-0"
     >
       {meta ? (
         <Text variant="caption-code" color="foreground-3">
@@ -392,6 +430,7 @@ function StagesRail({ items, meta }: { items: StageItem[]; meta: string }) {
                 title={item.name}
                 description={item.meta || undefined}
                 titleColor={visual.titleColor}
+                disableTruncate
               />
             </StackedList.Item>
           );
@@ -405,7 +444,11 @@ function LiveConsole({ telemetry }: { telemetry: Telemetry }) {
   return (
     <Layout.Vertical gap="sm" className="border-b border-cn-2 p-cn-md">
       <Layout.Horizontal align="center">
-        <Text variant="caption-strong" color="foreground-3" className="uppercase">
+        <Text
+          variant="caption-strong"
+          color="foreground-3"
+          className="uppercase"
+        >
           Live · last 24h
         </Text>
         <Text variant="caption-code" color="foreground-3" className="ml-auto">
@@ -420,7 +463,7 @@ function LiveConsole({ telemetry }: { telemetry: Telemetry }) {
           value: (
             <Text
               variant="body-strong"
-              color={stat.tone === 'ok' ? 'success' : 'foreground-1'}
+              color={stat.tone === "ok" ? "success" : "foreground-1"}
             >
               {stat.value}
             </Text>
@@ -432,7 +475,11 @@ function LiveConsole({ telemetry }: { telemetry: Telemetry }) {
         <Card.Content>
           <Layout.Vertical gap="xs">
             <Layout.Horizontal align="center">
-              <Text variant="caption-strong" color="foreground-3" className="uppercase">
+              <Text
+                variant="caption-strong"
+                color="foreground-3"
+                className="uppercase"
+              >
                 Deployed build
               </Text>
               <Text variant="caption-code" color="success" className="ml-auto">
@@ -451,7 +498,7 @@ function LiveConsole({ telemetry }: { telemetry: Telemetry }) {
                   type="button"
                   size="sm"
                   variant="outline"
-                  onClick={() => send({ type: 'rollback' })}
+                  onClick={() => send({ type: "rollback" })}
                 >
                   {telemetry.rollbackLabel}
                 </Button>
@@ -459,7 +506,7 @@ function LiveConsole({ telemetry }: { telemetry: Telemetry }) {
                   type="button"
                   size="sm"
                   variant="outline"
-                  onClick={() => send({ type: 'streamLogs' })}
+                  onClick={() => send({ type: "streamLogs" })}
                 >
                   Open logs
                 </Button>
@@ -470,7 +517,11 @@ function LiveConsole({ telemetry }: { telemetry: Telemetry }) {
       </Card.Root>
 
       <Layout.Vertical gap="xs">
-        <Text variant="caption-strong" color="foreground-3" className="uppercase">
+        <Text
+          variant="caption-strong"
+          color="foreground-3"
+          className="uppercase"
+        >
           Recent changes
         </Text>
         <StackedList.Root border={false}>
@@ -481,7 +532,11 @@ function LiveConsole({ telemetry }: { telemetry: Telemetry }) {
               paddingY="3xs"
               disableHover
               thumbnail={
-                <StatusBadge variant="status" theme={statusTheme(row.tone)} size="sm" />
+                <StatusBadge
+                  variant="status"
+                  theme={statusTheme(row.tone)}
+                  size="sm"
+                />
               }
               actions={
                 <Text variant="caption-code" color="foreground-3">
@@ -500,7 +555,11 @@ function LiveConsole({ telemetry }: { telemetry: Telemetry }) {
 
 function Footer({ left, right }: { left: string; right: string }) {
   return (
-    <Layout.Horizontal align="center" gap="xs" className="mt-auto bg-cn-2 px-cn-sm py-cn-xs">
+    <Layout.Horizontal
+      align="center"
+      gap="xs"
+      className="mt-auto bg-cn-2 px-cn-sm py-cn-xs"
+    >
       <StatusBadge variant="status" theme="success" size="sm" />
       <Text variant="caption-normal" color="foreground-3">
         {left}
@@ -513,73 +572,73 @@ function Footer({ left, right }: { left: string; right: string }) {
 }
 
 function stageThumbnail(status: StageStatus): ReactNode {
-  if (status === 'done') {
-    const name: IconV2NamesType = 'check';
+  if (status === "done") {
+    const name: IconV2NamesType = "check";
     return <IconV2 name={name} size="xs" color="success" />;
   }
-  if (status === 'active') {
+  if (status === "active") {
     return <StatusBadge variant="status" theme="info" size="sm" pulse />;
   }
-  if (status === 'failed') {
-    const name: IconV2NamesType = 'warning-triangle';
+  if (status === "failed") {
+    const name: IconV2NamesType = "warning-triangle";
     return <IconV2 name={name} size="xs" color="danger" />;
   }
-  if (status === 'held') {
-    const name: IconV2NamesType = 'clock';
+  if (status === "held") {
+    const name: IconV2NamesType = "clock";
     return <IconV2 name={name} size="xs" color="warning" />;
   }
   return <StatusBadge variant="status" theme="muted" size="sm" />;
 }
 
-function stageVisual(status: StageStatus): { titleColor: TextProps['color'] } {
-  if (status === 'done') return { titleColor: 'foreground-2' };
-  if (status === 'active') return { titleColor: 'foreground-1' };
-  if (status === 'failed') return { titleColor: 'danger' };
-  if (status === 'held') return { titleColor: 'warning' };
-  return { titleColor: 'foreground-3' };
+function stageVisual(status: StageStatus): { titleColor: TextProps["color"] } {
+  if (status === "done") return { titleColor: "foreground-2" };
+  if (status === "active") return { titleColor: "foreground-1" };
+  if (status === "failed") return { titleColor: "danger" };
+  if (status === "held") return { titleColor: "warning" };
+  return { titleColor: "foreground-3" };
 }
 
 function headerTone(state: PanelState): Tone {
-  if (state.view === 'fresh') return 'idle';
-  if (state.view === 'deploying') return 'info';
-  if (state.view === 'failed') return 'err';
-  if (state.view === 'approval') return 'warn';
-  if (state.view === 'publish') return 'ok';
-  return state.hero?.tone ?? 'ok';
+  if (state.view === "fresh") return "idle";
+  if (state.view === "deploying") return "info";
+  if (state.view === "failed") return "err";
+  if (state.view === "approval") return "warn";
+  if (state.view === "publish") return "ok";
+  return state.hero?.tone ?? "ok";
 }
 
 function statusTheme(tone: Tone): StatusBadgeTheme {
-  if (tone === 'ok') return 'success';
-  if (tone === 'warn') return 'warning';
-  if (tone === 'err') return 'danger';
-  if (tone === 'info' || tone === 'vibe') return 'info';
-  return 'muted';
+  if (tone === "ok") return "success";
+  if (tone === "warn") return "warning";
+  if (tone === "err") return "danger";
+  if (tone === "info" || tone === "vibe") return "info";
+  return "muted";
 }
 
 function tintClasses(tone: Tone): string {
-  if (tone === 'ok') return 'bg-cn-success-secondary border-cn-success';
-  if (tone === 'err') return 'bg-cn-danger-secondary border-cn-danger';
-  if (tone === 'warn') return 'bg-cn-warning-secondary border-cn-warning';
-  if (tone === 'info') return 'bg-cn-brand-secondary border-cn-brand';
-  if (tone === 'vibe') return 'bg-cn-purple-secondary border-cn-purple-outline';
-  return 'bg-cn-2 border-cn-3';
+  if (tone === "ok") return "bg-cn-success-secondary border-cn-success";
+  if (tone === "err") return "bg-cn-danger-secondary border-cn-danger";
+  if (tone === "warn") return "bg-cn-warning-secondary border-cn-warning";
+  if (tone === "info") return "bg-cn-brand-secondary border-cn-brand";
+  if (tone === "vibe") return "bg-cn-purple-secondary border-cn-purple-outline";
+  return "bg-cn-2 border-cn-3";
 }
 
 function tintBg(tone: Tone): string {
-  if (tone === 'ok') return 'bg-cn-success-secondary';
-  if (tone === 'err') return 'bg-cn-danger-secondary';
-  if (tone === 'warn') return 'bg-cn-warning-secondary';
-  if (tone === 'info') return 'bg-cn-brand-secondary';
-  if (tone === 'vibe') return 'bg-cn-purple-secondary';
-  return 'bg-cn-2';
+  if (tone === "ok") return "bg-cn-success-secondary";
+  if (tone === "err") return "bg-cn-danger-secondary";
+  if (tone === "warn") return "bg-cn-warning-secondary";
+  if (tone === "info") return "bg-cn-brand-secondary";
+  if (tone === "vibe") return "bg-cn-purple-secondary";
+  return "bg-cn-2";
 }
 
-function toneText(tone: Tone): NonNullable<TextProps['color']> {
-  if (tone === 'ok') return 'success';
-  if (tone === 'warn') return 'warning';
-  if (tone === 'err') return 'danger';
-  if (tone === 'info' || tone === 'vibe') return 'brand';
-  return 'foreground-3';
+function toneText(tone: Tone): NonNullable<TextProps["color"]> {
+  if (tone === "ok") return "success";
+  if (tone === "warn") return "warning";
+  if (tone === "err") return "danger";
+  if (tone === "info" || tone === "vibe") return "brand";
+  return "foreground-3";
 }
 
 function send(message: PanelMessage) {
