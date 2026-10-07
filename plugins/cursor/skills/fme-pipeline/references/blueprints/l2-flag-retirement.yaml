@@ -1,0 +1,69 @@
+# L2: Flag Retirement (PREPARATORY ONLY)
+#
+# Full pipeline blueprint for the fme-pipeline skill.
+# See ../blueprints.md and ../scenarios.md for context.
+#
+# INTENTIONAL RESTRICTION: this pipeline does NOT include an FmeFlagArchive
+# step. 100% rollout verified when the pipeline was authored is not the same
+# as archive readiness when it eventually runs -- staleness, dependents, and
+# active/paused experiments can change in between, and this skill has no
+# steps that re-check those conditions at execution time. After this
+# pipeline runs, remove the flag from code with /cleanup-feature-flags, then
+# archive with /manage-flag-lifecycle, which re-verifies readiness against
+# current state.
+
+pipeline:
+  identifier: flag_retirement_prep
+  name: Prepare Flag for Retirement
+  orgIdentifier: default
+  projectIdentifier: my_project
+  tags: {}
+  stages:
+    - stage:
+        identifier: mark_completed
+        name: Mark Flag as Completed
+        type: Custom
+        spec:
+          execution:
+            steps:
+              - step:
+                  identifier: update_status
+                  name: Update Rollout Status
+                  type: FmeFlagUpdate
+                  spec:
+                    name: old_checkout_flow
+                    rolloutStatus: Completed
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: MarkAsFailure
+    - stage:
+        identifier: remove_from_flagsets
+        name: Remove from Flagsets
+        type: Custom
+        spec:
+          execution:
+            steps:
+              - step:
+                  identifier: remove_flagsets
+                  name: Remove from Release Flagset
+                  type: FmeFlagAddRemoveFlagsets
+                  spec:
+                    flagName: old_checkout_flow
+                    environment: production
+                    removeFlagsets:
+                      - q4_release
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: MarkAsFailure
+
+# No FmeFlagArchive stage here by design -- see the header note above.
+# Next steps after this pipeline succeeds:
+#   1. /cleanup-feature-flags to remove old_checkout_flow from application code
+#   2. /manage-flag-lifecycle to archive, after it re-checks staleness,
+#      dependents, and active/paused experiments against current state
