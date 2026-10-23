@@ -31,21 +31,14 @@ for TARGET in "${TARGETS[@]}"; do
   rm -rf "$TARGET"
   mkdir -p "$TARGET"
 
-  for SKILL_DIR in "$SKILLS_SOURCE"/skills/*/; do
+  # Upstream layout: skills/<category>/<skill>/SKILL.md (flatten by skill name).
+  while IFS= read -r -d '' SKILL_MD; do
+    SKILL_DIR="$(dirname "$SKILL_MD")"
     SKILL_NAME="$(basename "$SKILL_DIR")"
 
-    if [[ ! -f "$SKILL_DIR/SKILL.md" ]]; then
-      echo "  Skipping $SKILL_NAME (no SKILL.md)"
-      continue
-    fi
-
-    mkdir -p "$TARGET/$SKILL_NAME"
-    cp "$SKILL_DIR/SKILL.md" "$TARGET/$SKILL_NAME/SKILL.md"
-
-    if [[ -d "$SKILL_DIR/references" ]]; then
-      cp -r "$SKILL_DIR/references" "$TARGET/$SKILL_NAME/references"
-    fi
-  done
+    rm -rf "$TARGET/$SKILL_NAME"
+    cp -a "$SKILL_DIR" "$TARGET/$SKILL_NAME"
+  done < <(find "$SKILLS_SOURCE/skills" -mindepth 3 -maxdepth 3 -type f -name 'SKILL.md' -print0)
 
   SYNCED=$(find "$TARGET" -name "SKILL.md" | wc -l | tr -d ' ')
   echo "  ✓ $(basename "$(dirname "$TARGET")")/$(basename "$TARGET") — $SYNCED skills"
