@@ -15,6 +15,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Validate sync script
+        run: ./scripts/test-sync-skills.sh
+
       - name: Clone harness-skills
         run: git clone --depth 1 https://github.com/harness/harness-skills ../harness-skills
 

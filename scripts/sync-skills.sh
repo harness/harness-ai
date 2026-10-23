@@ -31,20 +31,19 @@ for TARGET in "${TARGETS[@]}"; do
   rm -rf "$TARGET"
   mkdir -p "$TARGET"
 
-  for SKILL_DIR in "$SKILLS_SOURCE"/skills/*/; do
+  for SKILL_MD in "$SKILLS_SOURCE"/skills/*/*/SKILL.md; do
+    [[ -f "$SKILL_MD" ]] || continue
+
+    SKILL_DIR="$(dirname "$SKILL_MD")"
     SKILL_NAME="$(basename "$SKILL_DIR")"
 
-    if [[ ! -f "$SKILL_DIR/SKILL.md" ]]; then
-      echo "  Skipping $SKILL_NAME (no SKILL.md)"
-      continue
+    if [[ -e "$TARGET/$SKILL_NAME" ]]; then
+      echo "Error: duplicate skill name '$SKILL_NAME' found while syncing $SKILL_DIR"
+      exit 1
     fi
 
     mkdir -p "$TARGET/$SKILL_NAME"
-    cp "$SKILL_DIR/SKILL.md" "$TARGET/$SKILL_NAME/SKILL.md"
-
-    if [[ -d "$SKILL_DIR/references" ]]; then
-      cp -r "$SKILL_DIR/references" "$TARGET/$SKILL_NAME/references"
-    fi
+    cp -R "$SKILL_DIR"/. "$TARGET/$SKILL_NAME/"
   done
 
   SYNCED=$(find "$TARGET" -name "SKILL.md" | wc -l | tr -d ' ')
