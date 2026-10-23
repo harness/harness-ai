@@ -36,11 +36,18 @@ for TARGET in "${TARGETS[@]}"; do
     SKILL_DIR="$(dirname "$SKILL_MD")"
     SKILL_NAME="$(basename "$SKILL_DIR")"
 
-    rm -rf "$TARGET/$SKILL_NAME"
+    if [[ -e "$TARGET/$SKILL_NAME" ]]; then
+      echo "Error: duplicate skill name '$SKILL_NAME' across categories" >&2
+      exit 1
+    fi
     cp -a "$SKILL_DIR" "$TARGET/$SKILL_NAME"
   done < <(find "$SKILLS_SOURCE/skills" -mindepth 3 -maxdepth 3 -type f -name 'SKILL.md' -print0)
 
-  SYNCED=$(find "$TARGET" -name "SKILL.md" | wc -l | tr -d ' ')
+  SYNCED=$(find "$TARGET" -mindepth 2 -maxdepth 2 -name "SKILL.md" | wc -l | tr -d ' ')
+  if [[ "$SYNCED" -eq 0 ]]; then
+    echo "Error: synced 0 skills from $SKILLS_SOURCE — upstream layout may have changed" >&2
+    exit 1
+  fi
   echo "  ✓ $(basename "$(dirname "$TARGET")")/$(basename "$TARGET") — $SYNCED skills"
   SKILL_COUNT=$SYNCED
 done
