@@ -17,5 +17,5 @@ Per [Harness docs](https://developer.harness.io/docs/software-supply-chain-assur
 
 Signing in Deploy stages would follow the same **containerized step group** pattern as SBOM enforcement
 and SLSA verification — inside `stepGroup.steps` with `stepGroupInfra`, not top-level
-`execution.steps`. Mirror `skills/verify-sign/references/cd-containerized-step-group.md` with
+`execution.steps`. Mirror `skills/security/verify-sign/references/cd-containerized-step-group.md` with
 `SscaArtifactSigning` substituted for the step type.

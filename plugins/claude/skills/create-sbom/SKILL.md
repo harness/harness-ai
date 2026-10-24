@@ -12,8 +12,9 @@ description: >-
   scan for dependencies, SBOM Orchestration, add Generate SBOM step.
 metadata:
   author: Harness
-  version: 1.0.0
+  version: 1.0.1
   mcp-server: harness-mcp-v2
+  summary: Add SBOM Orchestration (generation/attestation) to existing pipelines
 license: Apache-2.0
 compatibility: Requires Harness MCP v2 server (harness-mcp-v2)
 ---
