@@ -10,7 +10,7 @@ AI-native interface to Harness CI/CD for Claude Code and Claude Cowork.
 ## Install
 
 ```bash
-# One-session local test from any project
+# From local directory (development)
 claude --plugin-dir /absolute/path/to/harness-ai/plugins/claude
 ```
 
