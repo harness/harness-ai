@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "harness",
-      "source": "plugins/claude",
+      "source": "./plugins/claude",
       "description": "Harness Skills + Harness MCP server packaged for Claude Code. Build, debug, deploy, and govern via Harness from Claude.",
       "repository": "https://github.com/harness/harness-ai"
     }
