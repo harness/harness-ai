@@ -31,6 +31,7 @@ check_file "$REPO_ROOT/plugins/vscode/agents/harness.agent.md"
 
 echo ""
 echo "Validating Claude Plugin..."
+check_file "$REPO_ROOT/.claude-plugin/marketplace.json"
 check_file "$REPO_ROOT/plugins/claude/.claude-plugin/plugin.json"
 check_file "$REPO_ROOT/plugins/claude/.mcp.json"
 
