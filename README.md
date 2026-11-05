@@ -11,7 +11,7 @@ Tell your agent *"Create a Kubernetes pipeline for this service, run it in stagi
 
 ## Install
 
-All four packages connect to the Harness remote MCP server (`https://mcp.harness.io/mcp`) by default — **no PAT required**, OAuth handles authentication on first tool call. If you prefer OSS + PAT, every plugin ships an `.mcp.local.json` sample you can swap in.
+All four packages connect to the Harness remote MCP server (`https://mcp.harness.io/mcp`) by default — **no PAT required**, OAuth handles authentication on first tool call. If you prefer OSS + PAT, every plugin ships an `.mcp.example.json` sample you can swap in.
 
 ### Cursor IDE
 
@@ -86,9 +86,9 @@ The full, authoritative catalog lives in [harness/harness-skills](https://github
 | Mode | URL / command | Auth | Default for |
 |------|---------------|------|-------------|
 | **Remote MCP** | `https://mcp.harness.io/mcp` | OAuth | Cursor, Claude, VS Code, Gemini |
-| **OSS MCP** | `npx harness-mcp-v2 stdio` | `HARNESS_API_KEY` + `HARNESS_ACCOUNT_ID` | Available as a sample (`.mcp.local.json` / `gemini-extension.local.json`) |
+| **OSS MCP** | `npx harness-mcp-v2 stdio` | `HARNESS_API_KEY` + `HARNESS_ACCOUNT_ID` | Available as a sample (`.mcp.example.json` / `gemini-extension.example.json`) |
 
-To switch a plugin to OSS MCP, copy its `.mcp.local.json` over the active MCP config.
+To switch a plugin to OSS MCP, copy its `.mcp.example.json` to `.mcp.local.json` and swap it over the active MCP config.
 
 ---
 
