@@ -8,7 +8,7 @@ MANDATORY — Tool Result Verification:
 
 ## Scope Rules
 
-Follow [`references/scope-establishment.md`](../../../references/scope-establishment.md) for establishing org/project scope before calling `harness_list`, `harness_get`, `harness_create`, `harness_update`, or `harness_execute` in this skill:
+Follow [`references/scope-establishment.md`](../../../../references/scope-establishment.md) for establishing org/project scope before calling `harness_list`, `harness_get`, `harness_create`, `harness_update`, or `harness_execute` in this skill:
 
 - Parse `org` / `project` from the user's message or a pasted Harness UI URL first.
 - Ask only for what is missing — do not re-ask for values already known.

@@ -169,7 +169,7 @@ Place **after** `slsageneration` in the same CI stage:
 ## CD Deploy stage
 
 Place inside a **containerized step group** (`stepGroupInfra`) **before** deploy. See
-`skills/generate-slsa/references/cd-containerized-step-group.md` (substitute `SlsaVerification`).
+`skills/security/generate-slsa/references/cd-containerized-step-group.md` (substitute `SlsaVerification`).
 
 **CD image:** prefer `<+artifact.image>` for `image_path` when verifying service artifacts.
 

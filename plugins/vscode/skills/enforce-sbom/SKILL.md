@@ -15,6 +15,7 @@ metadata:
   author: Harness
   version: 1.0.0
   mcp-server: harness-mcp-v2
+  summary: Add SBOM Policy Enforcement (verify attestation + OPA policy sets)
 license: Apache-2.0
 compatibility: Requires Harness MCP v2 server (harness-mcp-v2)
 ---
@@ -37,7 +38,7 @@ Guide the user through a **step-by-step interactive wizard** (same UX as `/creat
 
 - Wizard: `references/interactive-wizard-flow.md`
 - UI ↔ YAML: `references/sbom-enforcement-step.md`
-- CD containerized step groups (new or existing Deploy stage): `skills/create-sbom/references/cd-containerized-step-group.md`
+- CD containerized step groups (new or existing Deploy stage): `skills/platform/create-sbom/references/cd-containerized-step-group.md`
 
 ---
 
@@ -117,7 +118,7 @@ Mirror `/create-sbom` Phase 3b — **one topic per turn**:
 | Deploy step | Default `K8sRollingDeploy` for Kubernetes services |
 | CI enforcement | Optional: keep CI `SscaEnforcement` **and** add CD `enforce_sbom_cd`, or CD-only — confirm in Phase 10 |
 
-Append a Deploy stage with containerized group containing `CdSscaEnforcement` **before** `K8sRollingDeploy`. Full YAML patterns: `skills/create-sbom/references/cd-containerized-step-group.md` (use `CdSscaEnforcement` instead of `SscaOrchestration`).
+Append a Deploy stage with containerized group containing `CdSscaEnforcement` **before** `K8sRollingDeploy`. Full YAML patterns: `skills/platform/create-sbom/references/cd-containerized-step-group.md` (use `CdSscaEnforcement` instead of `SscaOrchestration`).
 
 **CD image / source:** prefer `<+artifact.image>` from the service primary artifact; reuse connector from CI `SscaOrchestration` or service artifact source. **Verify attestation** must match the CI generation step (e.g. keyless Harness OIDC).
 
@@ -192,11 +193,11 @@ Omit `verifyAttestation`.
 
 **CD `Deployment`** — use `CdSscaEnforcement` inside a containerized `stepGroup` (`stepGroupInfra`);
 include `spec.infrastructure` matching that group (see `references/sbom-enforcement-step.md` and
-`skills/create-sbom/references/cd-containerized-step-group.md`). When adding a new Deploy stage, place
+`skills/platform/create-sbom/references/cd-containerized-step-group.md`). When adding a new Deploy stage, place
 enforcement in `stepGroup.steps` **before** the deploy step — not at top-level `execution.steps`.
 
 Source types (`docker`, `ecr`, `gcr`, `gar`, `acr`, `har`, `repository`) match `/create-sbom` — see
-`skills/create-sbom/references/sbom-orchestration-step.md` for provider-specific `source.spec` fields.
+`skills/platform/create-sbom/references/sbom-orchestration-step.md` for provider-specific `source.spec` fields.
 
 Full UI mapping: `references/sbom-enforcement-step.md`.
 
@@ -303,7 +304,7 @@ Use defaults — same image as SBOM orchestration step, Harness OIDC verify
 - Create SBOM policies (`package sbom`) and a policy set with **onstep** via `/create-policy`.
 
 ### Policy Evaluation Failed (Deny)
-- Review deny/allow lists in policy Rego (`skills/create-policy/references/entity-sbom.md`).
+- Review deny/allow lists in policy Rego (`skills/observability-governance/create-policy/references/entity-sbom.md`).
 - Check execution **Supply Chain** → policy violations for component UUIDs.
 
 ### Attestation Verification Failed
@@ -318,7 +319,7 @@ Use defaults — same image as SBOM orchestration step, Harness OIDC verify
 ### CD Step Validation Errors
 - `CdSscaEnforcement` requires `spec.infrastructure` and containerized execution.
 - Place inside `stepGroup` with `stepGroupInfra` — not top-level `execution.steps` on a Deployment stage.
-- See `skills/create-sbom/references/cd-containerized-step-group.md`.
+- See `skills/platform/create-sbom/references/cd-containerized-step-group.md`.
 
 ### User Chose CD on CI-Only Pipeline
 - Expected — run Phase 3b; do not re-ask Placement with only CI options unless the user changes direction.

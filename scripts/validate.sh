@@ -15,6 +15,15 @@ check_file() {
   fi
 }
 
+echo "Validating skill sync script..."
+if ! "$REPO_ROOT/scripts/test-sync-skills.sh" >/dev/null; then
+  echo "  ✗ scripts/test-sync-skills.sh failed"
+  ERRORS=$((ERRORS + 1))
+else
+  echo "  ✓ scripts/test-sync-skills.sh"
+fi
+
+echo ""
 echo "Validating VS Code Plugin..."
 check_file "$REPO_ROOT/plugins/vscode/.github/plugin.json"
 check_file "$REPO_ROOT/plugins/vscode/.mcp.json"
@@ -22,6 +31,7 @@ check_file "$REPO_ROOT/plugins/vscode/agents/harness.agent.md"
 
 echo ""
 echo "Validating Claude Plugin..."
+check_file "$REPO_ROOT/.claude-plugin/marketplace.json"
 check_file "$REPO_ROOT/plugins/claude/.claude-plugin/plugin.json"
 check_file "$REPO_ROOT/plugins/claude/.mcp.json"
 

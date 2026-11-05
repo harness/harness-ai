@@ -85,7 +85,7 @@ Skip if Phase 3b will create the whole Deploy stage (default: new containerized 
 | `cd_containerized_after_step` | After a step inside containerized group |
 | `cd_new_containerized_group` | New containerized step group before deploy (Recommended when no group) |
 
-Full CD rules: `skills/create-sbom/references/cd-containerized-step-group.md` — use `CdSscaEnforcement`.
+Full CD rules: `skills/platform/create-sbom/references/cd-containerized-step-group.md` — use `CdSscaEnforcement`.
 
 **Recommendations:**
 

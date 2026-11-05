@@ -57,7 +57,7 @@ For **Deployment** stages, label step groups as **containerized** or **not**.
 
 If `cd_before_deploy` / `add_cd_stage` with no Deploy stage → **Phase 3b**.
 
-Full CD rules: `skills/generate-slsa/references/cd-containerized-step-group.md` — use `SlsaVerification`.
+Full CD rules: `skills/security/generate-slsa/references/cd-containerized-step-group.md` — use `SlsaVerification`.
 
 ---
 

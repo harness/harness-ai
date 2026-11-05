@@ -1,0 +1,18 @@
+{
+  "name": "harness-ai",
+  "owner": {
+    "name": "Harness",
+    "email": "support@harness.io"
+  },
+  "metadata": {
+    "description": "Harness AI distribution — Claude Code plugin (skills and MCP)"
+  },
+  "plugins": [
+    {
+      "name": "harness",
+      "source": "./plugins/claude",
+      "description": "Harness Skills + Harness MCP server packaged for Claude Code. Build, debug, deploy, and govern via Harness from Claude.",
+      "repository": "https://github.com/harness/harness-ai"
+    }
+  ]
+}

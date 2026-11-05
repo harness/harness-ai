@@ -31,23 +31,22 @@ for TARGET in "${TARGETS[@]}"; do
   rm -rf "$TARGET"
   mkdir -p "$TARGET"
 
-  # Upstream layout: skills/<category>/<skill>/SKILL.md (flatten by skill name).
-  while IFS= read -r -d '' SKILL_MD; do
+  for SKILL_MD in "$SKILLS_SOURCE"/skills/*/*/SKILL.md; do
+    [[ -f "$SKILL_MD" ]] || continue
+
     SKILL_DIR="$(dirname "$SKILL_MD")"
     SKILL_NAME="$(basename "$SKILL_DIR")"
 
     if [[ -e "$TARGET/$SKILL_NAME" ]]; then
-      echo "Error: duplicate skill name '$SKILL_NAME' across categories" >&2
+      echo "Error: duplicate skill name '$SKILL_NAME' found while syncing $SKILL_DIR"
       exit 1
     fi
-    cp -a "$SKILL_DIR" "$TARGET/$SKILL_NAME"
-  done < <(find "$SKILLS_SOURCE/skills" -mindepth 3 -maxdepth 3 -type f -name 'SKILL.md' -print0)
 
-  SYNCED=$(find "$TARGET" -mindepth 2 -maxdepth 2 -name "SKILL.md" | wc -l | tr -d ' ')
-  if [[ "$SYNCED" -eq 0 ]]; then
-    echo "Error: synced 0 skills from $SKILLS_SOURCE — upstream layout may have changed" >&2
-    exit 1
-  fi
+    mkdir -p "$TARGET/$SKILL_NAME"
+    cp -R "$SKILL_DIR"/. "$TARGET/$SKILL_NAME/"
+  done
+
+  SYNCED=$(find "$TARGET" -name "SKILL.md" | wc -l | tr -d ' ')
   echo "  ✓ $(basename "$(dirname "$TARGET")")/$(basename "$TARGET") — $SYNCED skills"
   SKILL_COUNT=$SYNCED
 done

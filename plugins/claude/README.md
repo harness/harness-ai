@@ -9,12 +9,36 @@ AI-native interface to Harness CI/CD for Claude Code and Claude Cowork.
 
 ## Install
 
-```bash
-# From local directory (development)
-cd plugins/claude
-claude /plugin install .
+### One-session local test
 
-# From plugin directory (after submission)
+Use this when developing or validating a local checkout. It does not install the
+plugin permanently.
+
+```bash
+claude --plugin-dir /absolute/path/to/harness-ai/plugins/claude
+```
+
+### Persistent local marketplace install
+
+Use this before the plugin is published. The first command registers this local
+repo as a Claude marketplace; the second installs the `harness` plugin from that
+specific marketplace.
+
+```text
+/plugin marketplace add /absolute/path/to/harness-ai/.claude-plugin/marketplace.json
+/plugin install harness@harness-ai
+/reload-plugins
+```
+
+Do not use `/plugin install harness` for local testing unless `harness` is already
+published in Claude's default plugin directory.
+
+### Published marketplace install
+
+Use this only after the plugin has been published to a default/official Claude
+plugin directory where `harness` is globally discoverable.
+
+```text
 /plugin install harness
 ```
 

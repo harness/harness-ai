@@ -6,10 +6,20 @@ on:
     paths:
       - "plugins/cursor/**"
       - ".cursor-plugin/marketplace.json"
+      - "scripts/sync-skills.sh"
+      - "scripts/test-sync-skills.sh"
+      - "scripts/validate.sh"
+      - ".github/workflows/cursor-plugin.yml"
+      - ".github/workflows/sync-skills.yml"
   pull_request:
     paths:
       - "plugins/cursor/**"
       - ".cursor-plugin/marketplace.json"
+      - "scripts/sync-skills.sh"
+      - "scripts/test-sync-skills.sh"
+      - "scripts/validate.sh"
+      - ".github/workflows/cursor-plugin.yml"
+      - ".github/workflows/sync-skills.yml"
 
 defaults:
   run:
@@ -24,6 +34,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+
+      - name: Validate skill sync script
+        working-directory: .
+        run: ./scripts/test-sync-skills.sh
 
       - name: Syntax-check hook scripts
         run: |

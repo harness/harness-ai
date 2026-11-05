@@ -5,12 +5,13 @@ description: >-
   (build, test, Docker push), CD stages (Kubernetes, Helm, ECS, serverless), approval gates, parallel
   execution, matrix strategies, and failure rollback. Use when asked to create a pipeline, build pipeline,
   deployment pipeline, CI/CD workflow, or set up Harness pipelines. Do NOT use for v1 simplified pipelines
-  (use create-pipeline-v1). Trigger phrases: create pipeline, build pipeline, deployment pipeline, CI/CD,
+  (use create-pipeline-v1) or FME flag rollout stages (use fme-pipeline). Trigger phrases: create pipeline, build pipeline, deployment pipeline, CI/CD,
   Harness pipeline, Kubernetes deploy pipeline.
 metadata:
   author: Harness
   version: 2.2.0
   mcp-server: harness-mcp-v2
+  summary: Generate v0 pipeline YAML (CI, CD, combined, approvals)
 license: Apache-2.0
 compatibility: Requires Harness MCP v2 server (harness-mcp-v2)
 ---

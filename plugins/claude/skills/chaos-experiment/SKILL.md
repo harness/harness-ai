@@ -13,6 +13,7 @@ metadata:
   version: 3.0.0
   mcp-server: harness-mcp-v2
   module: CHAOS
+  summary: Create, edit, and reference chaos experiments (faults, probes, actions)
 license: Apache-2.0
 compatibility: Requires Harness MCP v2 server (harness-mcp-v2)
 ---
@@ -34,7 +35,7 @@ MANDATORY — Tool Result Verification:
 
 Before any `harness_list`, `harness_get`, `harness_create`, `harness_update`, or
 `harness_execute` call in this skill, establish org/project scope using the repo-wide
-playbook at [`references/scope-establishment.md`](../../references/scope-establishment.md):
+playbook at [`references/scope-establishment.md`](../../../references/scope-establishment.md):
 
 - Parse `org` / `project` from the user's message or a pasted Harness UI URL first.
 - Ask only for what is missing — do not re-ask for values already known.

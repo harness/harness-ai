@@ -12,7 +12,7 @@ Validate fields with `harness_schema(resource_type="pipeline", path="steps")`.
 - An **existing pipeline** with (or about to have) an SBOM for the artifact — typically from
   `SscaOrchestration` (`/create-sbom`) or SBOM ingestion.
 - At least one **SBOM OPA policy** and a **policy set** that evaluates **On Step** against the
-  `sbom` entity. Create via `/create-policy` (see `skills/create-policy/references/entity-sbom.md`).
+  `sbom` entity. Create via `/create-policy` (see `skills/observability-governance/create-policy/references/entity-sbom.md`).
 - For **key-based** verification: a Harness **file secret** with the Cosign **public** key used to
   sign/attest the SBOM.
 
@@ -199,7 +199,7 @@ spec:
 
 - **Do not** run enforcement before an SBOM exists for the artifact.
 - Use the **same** `source` image/repo as the orchestration step unless the user specifies otherwise.
-- **CI-only pipeline + CD enforcement:** allowed — append a new `Deployment` stage with containerized group + `CdSscaEnforcement` before deploy. Follow `skills/create-sbom/references/cd-containerized-step-group.md` (substitute `CdSscaEnforcement` for `SscaOrchestration`).
+- **CI-only pipeline + CD enforcement:** allowed — append a new `Deployment` stage with containerized group + `CdSscaEnforcement` before deploy. Follow `skills/platform/create-sbom/references/cd-containerized-step-group.md` (substitute `CdSscaEnforcement` for `SscaOrchestration`).
 - **Do not** place `CdSscaEnforcement` at top-level `execution.steps` on a Deployment stage.
 
 ### New Deploy stage — enforcement in containerized group (abbreviated)

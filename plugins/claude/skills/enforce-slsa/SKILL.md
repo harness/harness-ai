@@ -13,6 +13,7 @@ metadata:
   author: Harness
   version: 1.0.0
   mcp-server: harness-mcp-v2
+  summary: Add SLSA Verification (verify attestation + OPA policy sets on provenance) to pipelines
 license: Apache-2.0
 compatibility: Requires Harness MCP v2 server (harness-mcp-v2)
 ---
@@ -36,7 +37,7 @@ Guide the user through a **step-by-step interactive wizard** (same UX as `/gener
 
 - Wizard: `references/interactive-wizard-flow.md`
 - UI ↔ YAML: `references/slsa-verification-step.md`
-- CD containerized step groups: `skills/generate-slsa/references/cd-containerized-step-group.md`
+- CD containerized step groups: `skills/security/generate-slsa/references/cd-containerized-step-group.md`
 
 ---
 
@@ -99,7 +100,7 @@ If no `Deployment` stage and user chose CD verify:
 > place **SLSA Verification** before deploy.
 
 Run Phase 3b (service, environment, infrastructure, `stepGroupInfra`) — mirror `/generate-slsa` Phase 3b.
-Use `skills/generate-slsa/references/cd-containerized-step-group.md` with `SlsaVerification`.
+Use `skills/security/generate-slsa/references/cd-containerized-step-group.md` with `SlsaVerification`.
 
 ### After the wizard — backend steps
 
@@ -256,7 +257,7 @@ Verify SLSA with public key account.cosign_public_key — same image as generati
 - **`verify_attestation`** is snake_case (not `verifyAttestation`). Prefer flat `type: keyless` + `oidcProvider` (same shape as generation `attestation`).
 - Policy sets on step **`enforce.policySets`** — not `spec.policy` like SBOM enforcement.
 - List `policy_set` via MCP — do not invent identifiers.
-- **CD:** containerized step group only; see `skills/generate-slsa/references/cd-containerized-step-group.md`.
+- **CD:** containerized step group only; see `skills/security/generate-slsa/references/cd-containerized-step-group.md`.
 - **Do not execute pipelines** in this skill — use `/run-pipeline` after configuration (same as `/configure-repo-scan`).
 - Pair with `/generate-slsa` (generate) and `/create-policy` (OPA rules).
 
@@ -290,7 +291,7 @@ Verify SLSA with public key account.cosign_public_key — same image as generati
 
 ### CD Step Errors
 - Place inside `stepGroup` with `stepGroupInfra` — not top-level `execution.steps`.
-- See `skills/generate-slsa/references/cd-containerized-step-group.md`.
+- See `skills/security/generate-slsa/references/cd-containerized-step-group.md`.
 
 ### User Chose CD on CI-Only Pipeline
 - Expected — run Phase 3b; do not force CI-only unless user changes direction.
