@@ -14,6 +14,13 @@
         "matcher": "MCP:harness_create|MCP:harness_update",
         "timeout": 20
       }
+    ],
+    "postToolUseFailure": [
+      {
+        "command": "./scripts/firewall-nudge.mjs",
+        "matcher": "Shell",
+        "timeout": 10
+      }
     ]
   }
 }
