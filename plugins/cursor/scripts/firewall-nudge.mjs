@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // postToolUseFailure hook — fires on Shell command failures.
 // If the failure looks like a network/registry firewall or policy block
-// (HTTP 403, TLS/DNS failure, explicit policy rejection) rather than a bad
+// (HTTP 403, Forbidden, explicit policy rejection) rather than a bad
 // command or local misconfiguration, attach a nudge as additional_context
 // so the agent considers allowlisting/mirrors/proxy config before retrying
 // or rewriting the command.
@@ -13,13 +13,8 @@ const PATTERNS = [
   /\bforbidden\b/i,
   /blocked by (?:policy|firewall)/i,
   /policy check (?:error|failed|denied)/i,
-  /access denied/i,
-  /connection refused/i,
   /proxy.{0,20}(reject|denied|block)/i,
   /network is unreachable/i,
-  /tls handshake timeout/i,
-  /x509: certificate signed by unknown authority/i,
-  /could not resolve host/i,
   /econnreset|eproto/i,
   /request blocked/i,
 ];
@@ -39,12 +34,13 @@ async function main() {
   console.log(JSON.stringify({
     additional_context: [
       "This command's failure matches a network/registry firewall or policy-block",
-      "signature (HTTP 403, TLS/DNS failure, or an explicit policy rejection), not",
+      "signature (HTTP 403, Forbidden, or an explicit policy rejection), not",
       "necessarily a bad package name or local misconfiguration. Before retrying or",
       "changing the command itself, consider: is this host/registry allowlisted by",
       "the corporate proxy or package firewall? Is there an internal mirror to use",
       "instead? Would a VPN/proxy setting or an allowlist request to the",
-      "network/platform team unblock it?",
+      "network/platform team unblock it? Use the dependency-firewall skill if",
+      "available to investigate and resolve this.",
       command ? `Command that failed: \`${command}\`` : "",
     ].filter(Boolean).join(" "),
   }));
