@@ -39,8 +39,10 @@ async function main() {
       "changing the command itself, consider: is this host/registry allowlisted by",
       "the corporate proxy or package firewall? Is there an internal mirror to use",
       "instead? Would a VPN/proxy setting or an allowlist request to the",
-      "network/platform team unblock it? Use the dependency-firewall skill if",
-      "available to investigate and resolve this.",
+      "network/platform team unblock it?",
+      "If this is a package download blocked by the Harness Artifact Registry",
+      "(HAR) firewall specifically, use the dependency-firewall skill if available",
+      "to investigate and resolve this.",
       command ? `Command that failed: \`${command}\`` : "",
     ].filter(Boolean).join(" "),
   }));
