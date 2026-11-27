@@ -11,9 +11,9 @@ const NOOP = {};
 const PATTERNS = [
   /\b403\b/i,
   /\bforbidden\b/i,
-  /blocked by (?:policy|firewall)/i,
+  /\bblocked by\b.{0,80}\b(?:policy|firewall)\b/i,
   /policy check (?:error|failed|denied)/i,
-  /proxy.{0,20}(reject|denied|block)/i,
+  /proxy.{0,20}(?:reject|denied|block)|(?:rejected|denied|blocked) by (?:a |the )?proxy/i,
   /network is unreachable/i,
   /econnreset|eproto/i,
   /request blocked/i,
@@ -22,9 +22,13 @@ const PATTERNS = [
 async function main() {
   const input = await readStdinJson();
   if (!input) { console.log(JSON.stringify(NOOP)); return; }
+  if (input.failure_type === "permission_denied" || input.is_interrupt) {
+    console.log(JSON.stringify(NOOP));
+    return;
+  }
 
   const command = input.tool_input?.command || "";
-  const text = [input.error_message, command].filter(Boolean).join("\n");
+  const text = input.error_message || "";
 
   if (!text.trim() || !PATTERNS.some((re) => re.test(text))) {
     console.log(JSON.stringify(NOOP));

@@ -81,13 +81,15 @@ The MCP server itself emits an **elicitation** prompt before every `harness_crea
 
 ## Governance Hooks
 
-This plugin ships with two MCP hooks (see `hooks/hooks.json`) that enforce Harness governance automatically:
+This plugin ships with three MCP hooks (see `hooks/hooks.json`) that enforce Harness governance automatically:
 
 1. **`beforeMCPExecution` on `MCP:harness_create`** — runs `scripts/check-templates.mjs`. Fires for `resource_type` in `{pipeline, pipeline_v1}`. When the pipeline body does not reference a `templateRef` / `useFromStage`, the hook lists Pipeline/Stage/StepGroup/Step templates available at account/org/project scope and returns `permission: "ask"` with the catalog. **When this hook fires, surface every candidate template to the user and ask whether to reuse one via `templateRef` before proceeding.**
 
 2. **`afterMCPExecution` on `MCP:harness_create` / `MCP:harness_update`** — runs `scripts/validate-policies.mjs`. For pipeline writes (`pipeline` or `pipeline_v1`), the hook calls the Harness Policy Engine (`/pm/api/v1/policy/evaluations/evaluate-by-type`) with the pipeline payload and attaches the evaluation result (pass/fail per policy, scope) as `additional_context`. **Treat any failures in this context as blocking — surface them to the user and propose YAML edits to remediate before re-running.**
 
-Both hooks fail open: if `HARNESS_API_KEY` / `HARNESS_ACCOUNT_ID` are missing or the API returns an error, the hook emits `permission: "allow"` / empty context so the agent is not blocked on infra issues. Credentials live in the environment and are inherited from Cursor.
+3. **`postToolUseFailure` on `Shell`** — runs `scripts/firewall-nudge.mjs`. When a failed command's error output matches a network, registry firewall, or policy-block signature, the hook returns troubleshooting context as `additional_context`. **Use this context to consider proxy or registry allowlisting, an internal mirror, and the dependency-firewall skill for a Harness Artifact Registry firewall block. Do not treat the nudge as proof of a network failure.**
+
+The two pipeline-governance hooks fail open: if `HARNESS_API_KEY` / `HARNESS_ACCOUNT_ID` are missing or the API returns an error, the hook emits `permission: "allow"` / empty context so the agent is not blocked on infra issues. Credentials live in the environment and are inherited from Cursor. `firewall-nudge.mjs` needs no credentials and is always active.
 
 ## Error Recovery
 
