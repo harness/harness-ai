@@ -22,16 +22,17 @@ Skill catalog and MCP tool surface are listed in the [root README](../../README.
 
 ### Governance Hooks
 
-Two MCP hooks enforce Harness governance automatically — no extra setup required beyond the API key and account ID.
+Three hooks enforce Harness governance and surface infra context automatically — no extra setup required beyond the API key and account ID.
 
 | Event | Matcher | Script | Behavior |
 |-------|---------|--------|----------|
 | `beforeMCPExecution` | `MCP:harness_create` | `scripts/check-templates.mjs` | Before creating a **pipeline** (`pipeline` or `pipeline_v1`), lists Pipeline/Stage/StepGroup/Step templates at account/org/project scope. If templates exist and the payload lacks a `templateRef`, prompts the user (`permission: "ask"`) with the catalog so they can reuse an approved template instead of a raw pipeline. |
 | `afterMCPExecution` | `MCP:harness_create`, `MCP:harness_update` | `scripts/validate-policies.mjs` | After a pipeline write, evaluates the YAML/JSON against OPA policies and policy sets bound to the `pipeline` entity at all three scopes via the Harness Policy Engine (`/pm/api/v1/policy/evaluations/evaluate-by-type`). Attaches pass/fail details as agent context. |
+| `postToolUseFailure` | `Shell` | `scripts/firewall-nudge.mjs` | After a failed shell command, checks the error for signs of a network/registry firewall or policy block (HTTP 403, Forbidden, explicit policy rejection). If matched, attaches a nudge as agent context suggesting the agent check proxy/registry allowlisting or an internal mirror, and — if this is a package download blocked by the Harness Artifact Registry (HAR) firewall specifically — use the dependency-firewall skill if available, instead of assuming a bad command. Needs no credentials — pure pattern match. |
 
-Both hooks accept all three body shapes `harness_create` supports — raw YAML string, `{yamlPipeline: "..."}`, and `{pipeline: {...}}` JSON — via `extractPipelineYaml()` in `scripts/harness-api.mjs`.
+The two pipeline-governance hooks accept all three body shapes `harness_create` supports — raw YAML string, `{yamlPipeline: "..."}`, and `{pipeline: {...}}` JSON — via `extractPipelineYaml()` in `scripts/harness-api.mjs`.
 
-**Fail-open by design.** If `HARNESS_API_KEY` or `HARNESS_ACCOUNT_ID` aren't set, or if the Harness API returns an error, the hooks emit `permission: "allow"` / empty context so the agent is never blocked on infra issues. All API calls are made with the same credentials you set for the MCP server — no extra config.
+**Fail-open by design.** If `HARNESS_API_KEY` or `HARNESS_ACCOUNT_ID` aren't set, or if the Harness API returns an error, the pipeline-governance hooks emit `permission: "allow"` / empty context so the agent is never blocked on infra issues. All API calls are made with the same credentials you set for the MCP server — no extra config. `firewall-nudge.mjs` has no credential dependency and is always active.
 
 **Scope.** Hooks fire only for pipeline resource types (`pipeline`, `pipeline_v1`). Extend `check-templates.mjs` and `validate-policies.mjs` (or add new matchers in `hooks/hooks.json`) to cover services, connectors, environments, or any other entity with policy coverage in your account.
 
